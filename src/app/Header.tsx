@@ -17,9 +17,9 @@ const navIcons: NavIcon[] = [
 
 function Header({ title }: { title: string }) {
   return (
-    <nav className="sticky top-0  w-full flex items-center py-1  bg-gray-800 text-white justify-center">
+    <nav className="sticky top-0 h-12 w-full flex items-center py-1 px-3  bg-neutral-800 text-white justify-center">
       <div className="w-[50rem] flex justify-between items-center">
-        <div className="text-lg font-semibold">{title}</div>
+        <div className="text-md font-semibold">{title}</div>
         <ul>
           {navIcons.map(({ href, icon }) => (
             <li key={href}>
