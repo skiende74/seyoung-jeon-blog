@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import typographyPlugin from "@tailwindcss/typography";
 
 export default {
   content: [
@@ -16,7 +17,10 @@ export default {
       boxShadow: {
         main: "3px 5px rgba(0,0,0,0.2)",
       },
+      fontSize: {
+        xs2: "0.6rem",
+      },
     },
   },
-  plugins: [],
+  plugins: [typographyPlugin],
 } satisfies Config;

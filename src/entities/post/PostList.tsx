@@ -1,17 +1,19 @@
 import React from "react";
-import Post from "./Post";
+import PostItem from "./PostItem";
 
 function PostList() {
   return (
     <section className="flex flex-col gap-y-3">
-      <Post
-        title="aa"
+      <PostItem
+        title="포스팅1"
+        href="/포스팅1"
         date={new Date()}
         content={"content"}
         tags={["tag1", "tag2"]}
       />
-      <Post
+      <PostItem
         title="aa"
+        href="/aa"
         date={new Date()}
         content={""}
         tags={[]}
