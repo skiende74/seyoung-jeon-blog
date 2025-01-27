@@ -1,29 +1,29 @@
-import type { Route } from "next";
-import Link from "next/link";
-import React, { ReactNode } from "react";
-import { FaGithub } from "react-icons/fa";
-import { IoPersonSharp } from "react-icons/io5";
+import type { Route } from 'next'
+import Link from 'next/link'
+import React, { ReactNode } from 'react'
+import { FaGithub } from 'react-icons/fa'
+import { IoPersonSharp } from 'react-icons/io5'
 
 interface NavIcon {
-  href: Route;
-  icon: ReactNode;
+  href: Route
+  icon: ReactNode
 }
 
 const navIcons: NavIcon[] = [
   {
-    href: "https://www.github.com/skiende74",
+    href: 'https://www.github.com/skiende74',
     icon: <FaGithub />,
   },
   {
-    href: "/about",
+    href: '/about',
     icon: <IoPersonSharp />,
   },
-];
+]
 
 function Header({ title }: { title: string }) {
   return (
-    <nav className="sticky top-0 h-12 w-full flex items-center py-1 px-3  bg-neutral-800 text-white justify-center">
-      <div className="w-[50rem] flex justify-between items-center">
+    <nav className="sticky top-0 flex h-12 w-full items-center justify-center bg-neutral-800 px-3 py-1 text-white">
+      <div className="flex w-[50rem] items-center justify-between">
         <Link href="/">
           <div className="text-md font-semibold">{title}</div>
         </Link>
@@ -36,7 +36,7 @@ function Header({ title }: { title: string }) {
         </ul>
       </div>
     </nav>
-  );
+  )
 }
 
-export default Header;
+export default Header
