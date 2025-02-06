@@ -1,6 +1,6 @@
 import type { MDXComponents } from 'mdx/types'
 import { Prism } from 'react-syntax-highlighter'
-import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
+// import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
