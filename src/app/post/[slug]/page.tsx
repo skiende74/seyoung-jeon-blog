@@ -17,6 +17,7 @@ async function page({ params }: { params: Promise<{ slug: string }> }) {
     </article>
   )
 }
+
 export function generateStaticParams() {
   const filenames = readdirSync(path.join(cwd(), 'static/post'))
   return filenames.map((filename) => ({
