@@ -1,13 +1,7 @@
-import React from 'react'
-import Post from './Post'
-import matter from 'gray-matter'
-import { join } from 'node:path'
+import { readdirSync } from 'node:fs'
+import path from 'node:path'
 import { cwd } from 'node:process'
-
-async function getPostMarkDown(slug: string) {
-  'use server'
-  return matter.read(join(cwd(), `static/post/${decodeURI(slug)}.mdx`))
-}
+import React from 'react'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -16,15 +10,18 @@ async function page({ params }: { params: Promise<{ slug: string }> }) {
   )
   const { title, date } = frontmatter
   return (
-    <div>
+    <article>
       <h1>{title}</h1>
       <div className="text-right">{date}</div>
       <Post />
-    </div>
+    </article>
   )
 }
 export function generateStaticParams() {
-  return [{ slug: 'home' }, { slug: 'content' }]
+  const filenames = readdirSync(path.join(cwd(), 'static/post'))
+  return filenames.map((filename) => ({
+    slug: filename.replace(/\.mdx?$/, ''),
+  }))
 }
 
 export default page
