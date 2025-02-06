@@ -18,13 +18,13 @@ const withMDX = createMDX({
   options: {
     remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
     rehypePlugins: [
-      [rehypeHighlight, {} satisfies Options],
-      [
-        rehypeHighlightCodeLines,
-        {
-          showLineNumbers: true,
-        } satisfies HighlightLinesOptions,
-      ],
+      // [rehypeHighlight, {} satisfies Options],
+      // [
+      //   rehypeHighlightCodeLines,
+      //   {
+      //     // showLineNumbers: true,
+      //   } satisfies HighlightLinesOptions,
+      // ],
     ],
   },
 })
