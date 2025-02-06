@@ -2,12 +2,14 @@ import { readdirSync } from 'node:fs'
 import path from 'node:path'
 import { cwd } from 'node:process'
 import React from 'react'
+import { getMDXFileMapper } from '../model/getMdxFileMapper'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { default: Post, frontmatter } = await import(
-    `@/../static/post/${decodeURI(slug)}.mdx`
-  )
+  const { default: Post, frontmatter } = (await getMDXFileMapper())[
+    decodeURI(slug)
+  ]
+
   const { title, date } = frontmatter
   return (
     <article>
