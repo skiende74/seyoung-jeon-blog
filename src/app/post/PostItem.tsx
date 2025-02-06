@@ -1,3 +1,4 @@
+import { Route } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
@@ -10,7 +11,7 @@ interface Props {
 }
 function PostItem({ title, date, content, tags, href }: Props) {
   return (
-    <Link href={`${href}`}>
+    <Link href={`${href}` as Route}>
       <article className="rounded-md bg-neutral-700 px-4 py-2 shadow-md shadow-neutral-800">
         <h2 className="text-lg font-semibold">{title}</h2>
         <p className="text-sm text-neutral-500">{content}</p>
