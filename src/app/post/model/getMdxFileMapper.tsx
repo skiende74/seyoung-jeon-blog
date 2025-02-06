@@ -1,5 +1,4 @@
 import { readdirSync } from 'node:fs'
-import { fstat } from 'fs'
 import path from 'path'
 import { cwd } from 'process'
 import type { FC } from 'react'
