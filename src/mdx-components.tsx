@@ -13,7 +13,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
           children={String(children).replace(/\n$/, '')}
           style={dark}
           language={match[1]}
-          // PreTag="div"
         />
       ) : (
         // 언어를 표시하지않은 code
