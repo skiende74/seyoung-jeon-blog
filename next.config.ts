@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: { typedRoutes: true },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  images: {
+    remotePatterns: [{ protocol: 'https', hostname: 'velog.velcdn.com' }],
+  },
 }
 
 const withMDX = createMDX({

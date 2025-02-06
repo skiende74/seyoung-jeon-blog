@@ -1,4 +1,5 @@
 import type { MDXComponents } from 'mdx/types'
+import Image from 'next/image'
 import { Prism } from 'react-syntax-highlighter'
 // import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
@@ -24,6 +25,10 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </code>
       )
     },
+    img: ({ width, height, ...props }) => {
+      return <Image width={width ?? 700} height={height ?? 700} {...props} />
+    },
+
     ...components,
   }
 }
