@@ -29,10 +29,6 @@ export default function RootLayout({
       <body
         className={`relative h-dvh bg-neutral-800 text-white ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github-dark.min.css"
-        />
         <Header title="Seyoung Jeon" />
         {children}
       </body>
