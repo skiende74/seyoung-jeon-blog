@@ -1,26 +1,20 @@
 import React from 'react'
 import PostItem from './PostItem'
-import { readdirSync } from 'fs'
-import { cwd } from 'process'
-import path from 'path'
 import { getMDXFileMapper } from './model/getMdxFileMapper'
 
 async function PostList() {
-  const filenames = readdirSync(path.join(cwd(), 'static/post'))
-  const filenames2 = filenames.map((filename) =>
-    filename.replace(/\.mdx?$/, '')
-  )
-  console.log('mapper', await getMDXFileMapper())
+  const files = await getMDXFileMapper()
+
   return (
     <section className="flex flex-col gap-y-3">
-      {filenames2.map((filename) => (
+      {Object.values(files).map(({ frontmatter }) => (
         <PostItem
-          key={filename}
-          title={filename}
-          href={`/post/${filename}`}
-          date={new Date()}
+          key={frontmatter.slug}
+          title={frontmatter.title}
+          href={`/post/${frontmatter.slug}`}
+          date={new Date(frontmatter.date)}
           content={'content'}
-          tags={['tag1', 'tag2']}
+          tags={frontmatter.tag ?? ['tag1', 'tag2']}
         />
       ))}
     </section>
