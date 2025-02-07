@@ -1,0 +1,291 @@
+---
+slug: tsconfig-json-official
+title: tsconfig.json 공식문서 해부하기
+content: 공식문서를 토대로 tsconfig.json에 대해 깊이 알아봅니다.
+date: 2024-12-26
+tags: [TypeScript, 공식문서]
+---
+
+디렉토리에 tsconfig.json가 있으면 해당 디렉토리가 TypeScript 프로젝트의 루트가 됩니다. 따라서 여타 라이브러리의 config파일들처럼 path.resolve(\_\_dirname, ...)할 필요가 없겠네요.
+JS프로젝트에는 jsconfig.json을 사용할수 있어요.
+
+## 기본예시
+
+```js
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "target": "ES2015",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["@testing-library/jest-dom"],
+    "skipLibCheck": true,
+    "strict": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*", "*.ts", "playwright/**/*.ts"]
+}
+```
+
+우선 위는 제가 기존의 프로젝트에서 사용했던 tsconfig.json입니다. 이 글에서는 공식문서에서 안내하는 기본속성을 다루고 난 후 이 속성들을 모두 다루었습니다.
+
+## 기본 속성
+
+`files` : string[]. 기재시 해당 파일만을 검사하게됩니다. 일일이 모든파일을 기재해야하기때문에 보통은 이 속성 말고 include속성에 'src/\*\*/\*'와 같은 속성을 넣어주는 게 유용합니다. 아주 작은 프로젝트일때만 사용합니다.
+`include` : glob string[]. 기재시 해당패턴 파일을 검사합니다.
+`exclude` : glob string[]. 기재시 해당패턴 파일을 제외시킵니다.
+`extends` : 다른 json파일 경로를 나타내는 string. 기존 설정파일을 합칩니다.
+`compilerOptions` : tsc CLI에 사용가능한 옵션을 설정해줄수있습니다.
+
+## 중요 compilerOptions 속성
+
+프로젝트시 compilerOptions에 위치한 속성들을 많이 사용하니
+이 옵션 중 중요한 옵션들을 다룹니다.
+
+### module
+
+`module` : 아웃풋 파일의 모듈형식을 설정합니다.
+CJS냐 ESM이냐 하는 그 import/export시의 모듈형식 맞습니다.
+
+통상 `nodenext`, `esnext`, `preserve`를 많이사용합니다.
+
+노드프로젝트라면 `nodenext`
+모듈프로젝트라면 `esnext`, `preserve`를 사용하면 됩니다.
+
+esnext는 모든 결과물이 최신 esm 모듈형식이 되는 것이고,
+preserve는 TSv5.4에서 나온 새 옵션인데, 기존의 모듈형식을 그대로 유지한다는 의미입니다.
+
+create-next-app@latest를 사용하여 프로젝트 생성시 기본적으로 `preserve`로 설정되어 있습니다.
+
+### moduleResolution
+
+위의 `module`이 아웃풋파일의 모듈방식을 의미한다면,
+이 설정은 인풋파일의 모듈을 해석할때 어떤 모듈로 인식할 것인지를 결정합니다.
+
+주요옵션은 'nodenext', 'node16','node10' 'classic' 등이 있습니다. node16부터는 ESM 방식을 지원합니다.
+node10부터는 CJS를 지원합니다.
+classic은 TS 1.6이전의 레거시이므로 사용하지말아야합니다.
+
+### target
+
+`target` : 아웃풋파일의 es버전을 명시합니다.
+공식문서는 모든 모던브라우저가 `es6`을 지원하기때문에 `es6`을 추천하고있습니다.
+
+예를들면 target을 ES5로 사용하면, `(a)=>a+2` 같은 화살표함수는 `function` 표현식으로 바뀝니다.
+
+### lib
+
+`lib` : TS가 제공하는 타입정의들 중에 사용하고싶은 것을 명시하면 됩니다. TS는 브라우저환경, build-in JS API 등의 타입정의들을 제공합니다.
+
+예를들면 DOM 기능(window, document)이 필요없다면 DOM을 명시하지않아도 됩니다.
+
+주요옵션으로는 ES5, ES6, ES2015(ES6과 같습니다), ES2023, ESNext, WebWorker 등이 있습니다.
+
+ES2015.Promise 처럼 일부기능만을 명시할 수도 있습니다만, 굳이 그렇게까지 할 이유는 없어보입니다.
+
+### jsx
+
+리액트를 사용하려면 항상 "jsx":"react-jsx"로 바꾸어 사용하곤 합니다.
+
+`jsx`: tsx 파일을 JS 아웃풋파일로 내보내는 방식을 결정합니다.
+
+`react-jsx` : production에서 `_jsx`호출문을 추가합니다.
+`react` : 파일마다 `React.createElement` 호출문을 추가합니다. (react의 레거시 설정방식입니다.)
+`preserve` : 아무런 변환을 수행하지 않습니다.
+
+### jsxImportSource
+
+위 옵션(jsx)에 설명되어있듯이, "jsx":"react-jsx"를 사용할 경우 `\_jsx`와 같은 팩토리함수를 사용하게 됩니다.
+
+여기에서는 사용하고자하는 \_jsx 함수의 제공처를 결정할 수 있습니다.
+예를들어 emotion과 같은 라이브러리를 사용한다면
+이 옵션에 "@emotion/react"를 적어주어야 정상동작합니다.
+그 외에는 디폴트옵션인 "react"를 사용하면 됩니다.
+
+### baseUrl
+
+매우 많은 프로젝트에서 사용한 옵션으로 기억합니다.
+
+"baseUrl"을 "./"로 설정할 경우 현재폴더를 루트디렉토리로 인식합니다.
+
+추후 "paths"를 사용할 경우에 이 경로에대한 상대경로로 기재하게됩니다.
+
+### paths
+
+모듈 import를 리매핑할 수 있습니다.
+
+예를들어
+
+```json
+"path": {"app/*": ["./src/app/*"],}
+```
+
+를 하였다면, `import a from "app/abc";`
+는 실제로는 `import a from "/src/app/abc";`처럼 동작하게 될 것입니다.
+
+위와같이 import alias 라고 부르는 설정을 위해서도 많이 사용하는 옵션입니다.
+
+### types
+
+`types` : 사용할 글로벌타입을 제한하기위한 옵션입니다.
+이 옵션을 사용하지 않을 경우 기본적으로 모든 `@types/` 패키지를 포함합니다. 하지만 이 속성을 명시할 경우 해당 글로벌 타입만을 사용하게됩니다.
+
+예를들면, `"types" : ["node","jest"]` 하게되면,
+`./node_modules/@types/node`, `./node_modules/@types/jest` 글로벌 타입정의만을 사용하게 될 것입니다.
+
+라이브러리에서 제공하는 타입에는 글로벌타입과 모듈타입이 있는데,
+글로벌 타입은 네임스페이스없이 사용한 타입이라 import없이 그냥 사용할 수 있는 전역타입이고, 모듈타입은 타입을 import해서 사용하는 타입입니다.
+
+이 설정에 의해 영향을 받는 타입은 글로벌 타입입니다.
+글로벌 타입의 예시로는 jest의 describe와 같이
+별도로 import하지않았는데도 에러없이 사용할 수 있는 타입들입니다.
+
+`React.HTMLDivElement`처럼 import해서 사용하던 타입들과는 무관한 이야기입니다.
+
+### resolveJsonModule
+
+`.json` 모듈을 import하는 것을 허용합니다.
+'.json'파일을 읽어 데이터를 가져오고자할때 켜줘야 할 것입니다.
+
+### skipLibCheck
+
+라이브러리에서 제공하는 '.d.ts' 파일(타입선언파일)의 타입검사를 건너뜁니다.
+시간을 아끼기 위해 사용합니다. 하지만, 종종 라이브러리 업데이트가 느려 타입문제가 생길 때 임시 방편으로 사용하기도 합니다.
+
+1. 라이브러리 타입 중복문제 : node_modules같은 라이브러리에 동일한 타입이 두개 이상 존재할때. 이런 경우도 사용할 수는 있지만, 공식문서는 `yarn`의 `resolutions`같은기능을 이용해 중복을 없애길 권장합니다.
+2. TS 버전 업그레이드시 기존라이브러리와 타입충돌이 생길 때, 일시적으로 타입문제를 피하기위해 사용할수도 있습니다.
+
+### forceConsistentCasingInFileNames
+
+윈도우, 리눅스 등은 대소문자 구분이 있는 OS이고,
+맥OS는 대소문자 구분이 없는 OS입니다.
+
+예를들면 Mac에서는 실제로는 'fileManager.ts'라는 파일을 가져오고싶은데 `./FileManager.ts`로 import해도 문제가 생기지않습니다.
+
+따라서 이렇게 대소문자를 다르게 사용하고 있는 경우 에러를 발생시켜줍니다.
+
+윈도우, 맥OS가 협업할 경우 발생할 수 있는 잠재적 문제를 예방해주는 것이라 보시면되겠습니다.
+
+한 개발자는 파일명에 대소문자 구분이없는 OS에서 작업하고,
+한 개발자는 대소문자 구분을 하는 OS에서 작업할 경우 문제가 생기니까요.
+
+### allowJs
+
+`allowJs`: 타입스크립트 파일이 js파일을 import하는 것을 허용합니다. 공식문서는 js 프로젝트를 ts로 마이그레이션 하는 상황에서 사용될 수 있다고 소개하고있습니다.
+
+```ts
+// @filename: index.ts
+import { defaultCardDeck } from "./card";
+```
+
+card.js를 import하려할 때 에러를 발생시키지만,
+allowJs가 켜져있다면 에러를 발생시키지 않습니다.
+
+### checkJs
+
+`checkJs`: js파일도 검사파일에 포함시킵니다.
+
+예를들면 `include`에 "src/\*\*/\*" 라고 기재해두었다면
+기존엔 .(ts|tsx) 확장자만 검사하는 반면,
+checkJs가 켜져있다면 **js,jsx** 확장자까지도 검사합니다.
+
+### noImplicitAny
+
+`noImplicitAny` : 타입명시가 없을 경우 자동으로 any로 평가하여 타입스크립트의 영역을 벗어나게됩니다. 이것을 허용하지 않는 규칙입니다. 반드시 켜는 것을 추천합니다.
+
+### strictNullChecks
+
+`strinctNullChecks` : 꺼져있을경우 `undefined`, `null`, `false`로 인한 에러가 무시됩니다.
+예를들어, \[1,2\].find(u=>u===3) 메소드의 결과는 undefined일 수 있지만 이게 꺼져있다면 number | undefined이 아닌 number로 추론되어 undefined로 인한 오류를 타입적으로 잡을 수 없습니다. 따라서 반드시 켜는 것을 추천합니다.
+
+### strict
+
+`strict` : 타입스크립트를 타입스크립트답게 쓰기위한 기본적인 옵션들을 켜는 명령입니다.
+
+위의 `noImplicitAny`, `strictNullChecks` 등과함께 다른 6개 정도의 옵션들을 켭니다.
+공식문서는 **strict**를 켜는 것을 권장하고 있습니다.
+
+### allowSyntheticDefaultImports
+
+원래 react는 아래와 같이 import해야합니다.
+
+```js
+import * as React from 'react'
+```
+
+하지만 이 옵션을 보통 켜고사용하기때문에, 아래와 같이 사용할 수 있습니다.
+
+```js
+import React from 'react'
+```
+
+모듈에 명시적인 default가 없을 때에
+ts컴파일러가 default를 추가해줍니다.
+
+```ts
+// @filename: utilFunctions.js
+const getStringLength = (str) => str.length;
+
+module.exports = {
+  getStringLength,
+};
+```
+
+위와 같은 상황에서는 module.exports.default가 없으므로 아래와같이 import시에 에러가 발생합니다.
+
+```ts
+// @filename: index.ts
+import utils from "./utilFunctions";
+Module '"/home/runner/work/TypeScript-Website/TypeScript-Website/packages/typescriptlang-org/utilFunctions"' has no default export.
+
+const count = utils.getStringLength("Check JS");
+```
+
+하지만 allowSyntheticDefaultImports를 켜두었다면
+트랜스파일러가 아래와같이 default를 자동으로 추가해줍니다.
+
+```js
+// @filename: utilFunctions.js
+const getStringLength = (str) => str.length
+const allFunctions = {
+  getStringLength,
+}
+module.exports = allFunctions
+module.exports.default = allFunctions
+```
+
+### esModuleInterop
+
+마찬가지로 리액트 환경에서 보통 항상 켜져있는 옵션입니다.
+이 옵션이 꺼져있다면 TS는 CJS/AMD/UMD 모듈도 ESM모듈로 취급합니다.
+
+#### CJS === ESM 변환 :
+
+`import * as moment from "moment"` == `const moment = require("moment")`
+
+`import moment from "moment"` == `const moment = require("moment").default`
+
+TS는 위와 같은 과정으로 CJS를 인식합니다.
+하지만 위 두 방식엔 두가지 불일치 **결점**이 있습니다.
+
+1. ES6 모듈 spec은 `import * as x` 문법(namespace import)을 object에만 허용합니다. 반면 TS는 require("x") 된 결과에대해 function으로 사용하는 것을 허용합니다.
+2. ESM 스펙은 정확하지만, CJS/AMD/UMD 모듈은 TS구현만큼 엄격하지 못합니다.
+
+`esModuleInterop`옵션을 켜면 이러한 문제를 해결합니다.
+조금더 구체적으로 말하자면,
+불러오려는 모듈이 ESM인지, 다른모듈방식인지를 파악후 그에따라 맞는 작동을 하도록하는 헬퍼함수를 통해 import를 수행하기때문에 이러한 문제점을 해결합니다.
+
+참고로 이 옵션을 켜면 자동으로 위의 `allowSyntehticDefaultImports`옵션이 켜집니다.
+
+좀 더 상세한 내용, 소스코드는 [ts - esModuleInterop](https://www.typescriptlang.org/tsconfig/#esModuleInterop)을 참고해주세요.

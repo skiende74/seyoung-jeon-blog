@@ -14,7 +14,7 @@ async function PostList() {
           href={`/post/${frontmatter.slug}`}
           date={new Date(frontmatter.date)}
           content={frontmatter.content ?? ''}
-          tags={frontmatter.tag ?? ['tag1', 'tag2']}
+          tags={frontmatter.tags ?? []}
         />
       ))}
     </section>

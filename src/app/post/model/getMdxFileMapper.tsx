@@ -7,7 +7,7 @@ interface Frontmatter {
   slug: string
   title: string
   date: string
-  tag?: string[]
+  tags?: string[]
   content?: string
 }
 interface MDXFile {

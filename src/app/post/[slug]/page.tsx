@@ -3,7 +3,7 @@ import { getMDXFileMapper } from '../model/getMdxFileMapper'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { default: Post, frontmatter } = (await getMDXFileMapper())[
+  const { default: MDXPost, frontmatter } = (await getMDXFileMapper())[
     decodeURI(slug)
   ]
 
@@ -12,7 +12,8 @@ async function page({ params }: { params: Promise<{ slug: string }> }) {
     <article>
       <h1>{title}</h1>
       <div className="text-right">{date}</div>
-      <Post />
+      <MDXPost />
+      <div className="h-30" />
     </article>
   )
 }
