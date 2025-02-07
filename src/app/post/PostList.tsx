@@ -13,7 +13,7 @@ async function PostList() {
           title={frontmatter.title}
           href={`/post/${frontmatter.slug}`}
           date={new Date(frontmatter.date)}
-          content={'content'}
+          content={frontmatter.content ?? ''}
           tags={frontmatter.tag ?? ['tag1', 'tag2']}
         />
       ))}

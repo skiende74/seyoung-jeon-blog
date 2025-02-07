@@ -1,6 +1,6 @@
 import type { MDXComponents } from 'mdx/types'
 import Image from 'next/image'
-import { Prism } from 'react-syntax-highlighter'
+// import { Prism } from 'react-syntax-highlighter'
 // import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
@@ -32,32 +32,3 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ...components,
   }
 }
-
-// coy
-// dark
-// funky
-// okaidia
-// solarizedlight
-// tomorrow
-// twilight
-// prism
-// a11yDark
-// atomDark
-// base16AteliersulphurpoolLight
-// cb
-// coldarkCold
-// coldarkDark
-// coyWithoutShadows
-// darcula
-// dracula
-// duotoneDark
-// duotoneEarth
-// duotoneForest
-// duotoneLight
-// duotoneSea
-// duotoneSpace
-// ghcolors
-// gruvboxDark
-// gruvboxLight
-// holiTheme
-// hopscotch

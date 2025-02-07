@@ -8,6 +8,7 @@ interface Frontmatter {
   title: string
   date: string
   tag?: string[]
+  content?: string
 }
 interface MDXFile {
   frontmatter: Frontmatter
