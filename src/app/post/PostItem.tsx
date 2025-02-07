@@ -14,9 +14,9 @@ function PostItem({ title, date, content, tags, href }: Props) {
     <Link href={`${href}` as Route}>
       <article className="rounded-md bg-neutral-700 px-4 py-2 shadow-md shadow-neutral-800">
         <h2 className="text-lg font-semibold">{title}</h2>
-        <p className="text-sm text-neutral-500">{content}</p>
-        <div className="mt-3 flex justify-between">
-          <div className="flex gap-2 gap-x-[0.4rem]">
+        <p className="mt-2 text-sm text-neutral-500">{content}</p>
+        <div className="mt-3.5 flex justify-between">
+          <div className="flex gap-x-[0.4rem]">
             {tags.map((tag) => (
               <div
                 key={tag}
