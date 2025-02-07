@@ -5,26 +5,26 @@ import { Prism } from 'react-syntax-highlighter'
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
-    code: ({ inline, className, children, ...props }) => {
-      const match = /language-(\w+)/.exec(className || '')
+    // code: ({ inline, className, children, ...props }) => {
+    //   const match = /language-(\w+)/.exec(className || '')
 
-      // 언어가 표시된 code
-      return !inline && match ? (
-        <Prism
-          {...props}
-          // style={coy}
-          language={match[1]}
-          showLineNumbers={true}
-        >
-          {String(children).replace(/\n$/, '')}
-        </Prism>
-      ) : (
-        // 언어를 표시하지않은 code
-        <code {...props} className={className}>
-          {children}
-        </code>
-      )
-    },
+    //   // 언어가 표시된 code
+    //   return !inline && match ? (
+    //     <Prism
+    //       {...props}
+    //       // style={coy}
+    //       language={match[1]}
+    //       showLineNumbers={true}
+    //     >
+    //       {String(children).replace(/\n$/, '')}
+    //     </Prism>
+    //   ) : (
+    //     // 언어를 표시하지않은 code
+    //     <code {...props} className={className}>
+    //       {children}
+    //     </code>
+    //   )
+    // },
     img: ({ width, height, ...props }) => {
       return <Image width={width ?? 700} height={height ?? 700} {...props} />
     },

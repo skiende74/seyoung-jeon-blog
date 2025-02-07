@@ -1,11 +1,13 @@
+import './code-prism.css'
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {/* <link
+      <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/github-dark.min.css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/base16/atelier-dune-light.min.css"
         precedence="medium"
-      /> */}
+      />
+
       <div className="prose prose-invert prose-pre:bg-[transparent] m-auto max-w-[700px]">
         {children}
       </div>

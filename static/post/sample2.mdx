@@ -26,8 +26,7 @@ React환경에서 Kakao Map API를 사용하거나, 외부 API를 사용하기�
 그래서 기존에는 아래와같이 useExternalScript() 훅을 구현하는 방식으로 사용하는 경우가
 많이 있었습니다.
 
-```ts
-// KakaoMap.tsx
+```ts:KakaoMap.tsx
 function KakaoMap() {
   const container = useRef(null);
   const init = () => {
