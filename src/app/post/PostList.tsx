@@ -13,7 +13,7 @@ async function PostList() {
   )
 
   return (
-    <section className="flex flex-col gap-y-4">
+    <section className="flex flex-col gap-y-4 pb-8">
       {sortedMdxFiles.map(
         ({ frontmatter: { slug, title, date, summary: content, tags } }) => (
           <PostItem
