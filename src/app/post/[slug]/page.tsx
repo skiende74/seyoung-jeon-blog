@@ -4,7 +4,7 @@ import { getMDXFileMapper } from '../model/getMdxFileMapper'
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const { default: MDXPost, frontmatter } = (await getMDXFileMapper())[
-    decodeURI(slug)
+    decodeURIComponent(slug)
   ]
 
   const { title, date } = frontmatter
