@@ -1,0 +1,33 @@
+---
+slug: 알고리즘-KMP-기본유형-정리
+date: 2024-06-11
+title: 알고리즘 - KMP 기본유형 정리
+summary: KMP 알고리즘 유형의 기본 풀이방법을 정리합니다.
+tags: [알고리즘]
+---
+
+```python
+text = input()
+pat = input()
+
+N, M = len(text), len(pat)
+text = '#' + text
+pat = '#' + pat
+
+f = [-1]+[0]*M
+j = -1
+for i in range(1, M+1):
+    while j>=0 and pat[j+1] != pat[i]: j = f[j] # 틀리면 실패함수 적용
+    j += 1 # 이제는 한칸 이동
+    f[i] = j # 실패함수는 지금 j위치
+
+ans = []
+j = 0
+for i in range(1, N+1):
+    while j>=0 and pat[j+1] != text[i]: j = f[j]
+    j += 1
+    if j==M:
+        # 매칭시 하고싶은일 작성
+```
+
+기본 구현

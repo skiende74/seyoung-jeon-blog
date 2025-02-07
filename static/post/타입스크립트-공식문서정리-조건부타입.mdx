@@ -1,0 +1,61 @@
+---
+slug: 타입스크립트-공식문서정리-조건부타입
+date: 2024-06-13
+title: 타입스크립트 공식문서정리 조건부타입
+summary: 공식문서의 조건부타입(extends)을 정리합니다.
+tags: [공식문서, TypeScript]
+---
+
+#### 제네릭
+
+제네릭 사용시에도 =를 이용해 default값을 넘길 수 있다.
+
+### 조건부 타입 (conditional types)
+
+`AType extneds BType ? TrueType : FalseType`
+형태로 사용.
+조건식에는 extends를 써야한다.
+
+````typescript
+type MessageOf<T extends { message: unknown }> = T["message"];
+type MessageOf<T> = T extends { message: unknown } ? T["message"] : never;```
+````
+
+이렇게 가능하다.
+
+```typescript
+type Flatten<T> = T extends any[] ? T[number] : T;
+```
+
+#### infer (조건부타입 내)
+
+조건부타입 extends 내에서 infer로 타입을 얻어올 수 있다.
+타입을 any로 열어두고, 그 결과를 얻어오는 셈.
+
+```typescript
+type Flatten<T> = T extends Array<infer Item> ? Item : T;
+```
+
+이렇게 해두면, Array\<any\>로 검사하고,
+실제 타입을 Item에 얻어오는 셈이다.
+
+```typescript
+type GetReturnType<Type> = Type extends (...args: never[]) => infer Return
+  ? Return
+  : never;
+```
+
+이렇게하면 => any이고,
+이 any에 들어오는 녀석을 Return으로 받아서 사용하는 것이다.
+
+#### 조건부 타입은 유니온에 대해 개별동작(분배적)이다.
+
+ToArray\<string|number\>
+이 있다면, 결과가
+string[]|number[]이 된다.
+개별동작.
+
+다만 이는 제네릭과 같은 상황에서만 적용된다.
+단순 유니온이라고하여 모두 조건부타입에서 분배되는것은아니다.
+
+그리고 개별동작을 막는 법도 있긴하다.

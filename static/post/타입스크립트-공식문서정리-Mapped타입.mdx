@@ -1,0 +1,58 @@
+---
+slug: 타입스크립트-공식문서정리-Mapped타입
+date: 2024-06-14
+title: 타입스크립트 공식문서정리 Mapped타입
+summary: 공식문서의 Mapped타입을 정리합니다.
+tags: [공식문서, TypeScript]
+---
+
+### 매핑타입은 index signature를 기반으로 만들어진다.
+
+밸류가 모두 boolean인 객체타입으로 바꿔주는 제네릭을 만들고싶으면
+
+```typescript
+type OptionsFlags<Type> = {
+  [Property in keyof Type]: boolean;
+};
+```
+
+이렇게 해주면
+OptionFlags\<typeof \{darkMode: ()=>void;\}\>이 \{darkMode:boolean;\}타입으로 바뀐다 !
+
+### 객체의 키에 -/+ ?, -/+ readonly가 사용가능하다.
+
+-/+ readonly에서 그냥 readonly만 쓰면 +라는 의미이고, -는 기존 속성에서 readonly속성을 해제한다는의미 +는 readonly로 설정한다는 의미
+
+?에 대해서도 마찬가지. -?이면 ?를해제하겠다는의미
+
+### index signature 내부에서 as로 키 리매핑이 가능하다
+
+예시
+
+```typescript
+type Getter<T> = {
+  [property in keyof T as `get${string & property}`]: ()=> T[prop]
+}
+```
+
+으로 작성시
+
+```typescript
+interface Person {
+    name: string;
+    age: number;
+    location: string;
+}
+type LazyPerson = Getter<Person>;
+
+type LazyPerson = {
+	getname: ()=>string;
+  	age: ()=>number;
+  	location: ()=>string;
+}
+```
+
+이 가능하다.
+
+재미있는 점은 단순단언은 아니라는 것이다.
+만약 여기서 never를 사용한다면 해당 키를 제거(필터링)할 수 있다.

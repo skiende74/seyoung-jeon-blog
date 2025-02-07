@@ -26,14 +26,7 @@ function PostItem({ title, date, content, tags, href }: Props) {
               </div>
             ))}
           </div>
-          <div className="text-xs">{`${date.getFullYear().toString().slice(-2).padStart(2, '0')}. ${(
-            date.getMonth() + 1
-          )
-            .toString()
-            .padStart(
-              2,
-              '0'
-            )}. ${date.getDate().toString().padStart(2, '0')}`}</div>
+          <div className="text-xs">{getDateString(date)}</div>
         </div>
       </article>
     </Link>
@@ -41,3 +34,11 @@ function PostItem({ title, date, content, tags, href }: Props) {
 }
 
 export default PostItem
+
+const getDateString = (date: Date) => {
+  const year = date.getFullYear().toString().slice(-2).padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const dates = date.getDate().toString().padStart(2, '0')
+
+  return `${year}. ${month}. ${dates}`
+}

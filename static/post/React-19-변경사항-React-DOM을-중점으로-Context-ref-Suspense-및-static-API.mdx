@@ -1,0 +1,253 @@
+---
+slug: React-19-변경사항-React-DOM을-중점으로-Context-ref-Suspense-및-static-API
+date: 2024-12-14
+title: React 19 변경사항 / React DOM을 중점으로 - Context, ref, Suspense 및 static API
+summary: React-dom 19에 새로도입된 다양한 변경 사항을 다룹니다.
+tags: ['React', 'React Dom', '공식문서']
+---
+
+```
+공식문서를 참고하여 React 19에서도 React DOM의 변경사항을 집중 정리해보았습니다.
+
+주요 대상독자
+- React 19의 신규기능을 공식문서보다 조금 더 친숙한 언어로 빨리 이해하고 싶은 사람.
+```
+
+React 19에서는 React DOM과 관련된 업데이트가 아주 많았습니다.
+React 19의 업데이트중
+
+이번에는 React 19업데이트 중 기능추가가 아닌, "React DOM 관련 업데이트"들만을 정리해보았습니다.
+(더 많은 사람들에게 해당되는 변경사항일 수록 앞 부분에 배치하였습니다.)
+
+### Context 자체를 Provider로 쓸수있게 바뀌었습니다.
+
+```typescript
+const ThemeContext = createContext('');
+
+function App({children}) {
+  return (
+    <ThemeContext value="dark">
+      {children}
+    </ThemeContext>
+  );
+}
+```
+
+기존에는 \<ThemeContext.Provider value="dark"\>로 사용해주어야 했죠?
+이제는 .Provider할 필요없이 ThemeContext를 바로 Provider로서 사용할수있게되었습니다.
+기존의 ThemeContext.Provider 방식은 추후 버전에서 deprecate될 예정입니다.
+
+### ref prop을 지원합니다. forwardRef는 제거될 것입니다.
+
+이제는 더이상 ref를 prop으로 넘기기위해 forwardRef를 사용할 필요가 없습니다.
+
+```typescript
+function MyInput({placeholder, ref}) {
+  return <input placeholder={placeholder} ref={ref} />
+}
+
+// 사용처
+<MyInput ref={ref} />
+```
+
+위 코드처럼 ref를 일반 prop와 같이 취급할 수 있게 되었습니다.
+
+### ref callback에 cleanup 함수가 생겼습니다.
+
+```typescript
+<input
+  ref={(ref) => {
+    // ref created
+
+    // NEW: 컴포넌트가 unmount될때, ref를 reset하기 위한 클린업
+    return () => {
+      // ref cleanup
+    };
+  }}
+/>
+```
+
+ref callback에 unmount될때 ref구독을 reset하도록 cleanup함수를 제공할수 있게되었습니다.
+
+#### ref callback 에 대한 부가 설명
+
+ref에 ref callback을 넣어서 사용하시는게 생소하실 수 있지만,
+18버전에서도 이미 ref에 ref callback을 넣어서 사용할 수 있었습니다.
+이번에는 그 콜백에 cleanup 함수 기능이 추가되었습니다.
+
+ref에 ref Object를 넣을경우 해당 ref.current에 node 요소가 할당되지만,
+ref callback은 그 자유도를 조금 더 넓혀서 node 요소를 인자로 받아 원하는 곳에 저장할 수 있습니다.
+
+예를 들면, react Component에 new Map()을 만들어두고,
+ref callback에서 이 Map에 node를 저장하는 로직을 통해
+하나의 useRef만으로도 동적인 DOM node 저장을 수행할 수 있습니다.
+더 자세한 건 [Ref로 DOM관리하기 - ref callback](https://react.dev/learn/manipulating-the-dom-with-refs#how-to-manage-a-list-of-refs-using-a-ref-callback)를 참고해주세요.
+
+### 컴포넌트내 메타태그(\<meta\>, \<link\> 등) 사용시 자동으로 \<head\>태그로 옮겨갑니다. (Metadata)
+
+HTML 정의상으로는 \<meta\>, \<title\>, \<link\> 태그들은 \<head\>태그 내에 존재해야만 합니다.
+
+이 때문에 기존에는 일일이 index.html을 고쳐주거나, react-helmet같은 라이브러리, 또는 useEffect를 이용해 직접삽입해줬지만,
+
+이제는 그럴 필요가 없습니다.
+
+```typescript
+  function BlogPost({post}) {
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <title>{post.title}</title>
+      <meta name="author" content="Josh" />
+      <link rel="author" href="https://twitter.com/joshcstory/" />
+      <meta name="keywords" content={post.keywords} />
+      <p>
+        Eee equals em-see-squared...
+      </p>
+    </article>
+  );
+}
+```
+
+위와 같이 컴포넌트 내에서도 메타데이터 태그를 삽입하는 것 만으로
+자동으로 \<head\> section에 삽입되게 됩니다.
+
+(아직은 이정도의 단순 삽입 기능만 제공하고, 더 파워풀한 기능이 필요하다면 아직 react-helmet이 유용합니다. )
+
+### 컴포넌트 내에서 link태그로 CSS(StyleSheet) 삽입시 자동으로 \<head\> 태그 내로 이동합니다
+
+\<link/\> 태그를 통한 stylesheet 삽입도 지원합니다.
+stylesheet는 삽입순서에따라 스타일 우선순위를 고려하는 것이 매우 중요하기때문에, 이를 고려하기위해 precedence attribute를 통해 리액트가 link태그 배치순서를 결정해서 삽입해줍니다.
+
+```typescript
+function ComponentOne() {
+  return (
+    <Suspense fallback="loading...">
+      <link rel="stylesheet" href="foo" precedence="default" />
+      <link rel="stylesheet" href="bar" precedence="high" />
+      <article class="foo-class bar-class">
+        {...}
+      </article>
+    </Suspense>
+  )
+}
+
+function ComponentTwo() {
+  return (
+    <div>
+      <p>{...}</p>
+      <link rel="stylesheet" href="baz" precedence="default" />  <-- will be inserted between foo & bar
+    </div>
+  )
+```
+
+이와 같은 상황에서
+
+### 컴포넌트 내에서 async script 태그 사용시 자동으로 \<head\> 태그 내로 이동합니다
+
+react component내에서
+
+```typescript
+function MyComponent() {
+  return (
+    <div>
+      <script async={true} src="..." />
+      Hello World
+    </div>
+  )
+}
+
+function App() {
+  <html>
+    <body>
+      <MyComponent>
+      ...
+      <MyComponent> // won't lead to duplicate script in the DOM
+    </body>
+  </html>
+}
+```
+
+이와같이 사용해주면, script태그는 head태그로 이동합니다.
+컴포넌트를 두 번 렌더하더라도,
+src를 기준으로 동일하다면 중복삽입되지않고 한번만 삽입됩니다.
+
+( head로 이동하는 것은 async={true} attribute를 넣어주었을때만 해당됩니다. )
+
+### Suspense는 더이상 Suspend되지않은 자식을 기다리지 않습니다.
+
+![](https://velog.velcdn.com/images/skiende74/post/592d40f2-4eae-4699-b114-1c5be341320e/image.png)
+
+React Query로 useSuspenseQuery를 한 후, 부모에서 Suspense로 감싸서 사용하신 경험이 많으실 것입니다.
+
+기존엔 Suspend(지연된 컴포넌트. useSuspenseQuery를 사용하는 컴포넌트)를 Suspense가 감싸고 있을 때,
+나머지 일반 컴포넌트인 자식들을 모두 기다렸었지만 이제는 이것을 기다리지 않습니다.
+
+그리고 일반컴포넌트인 자식들은, lazy request를 통해 백그라운드에서 미리 렌더해둡니다("pre-warm")
+
+#### TIP. Suspend란?
+
+- 컴포넌트 지연을 일으켜, Suspense에서 잡아줘야하는 동작을 말합니다.
+- React의 use, lazy 또는 React-Query의 useSuspenseQuery를 사용할 경우 컴포넌트가 suspend됩니다.
+- Next.js의 데이터 fetch동작을 사용할 경우도 포함됩니다.
+
+### React-DOM/static API가 새로생겼습니다.
+
+리액트에 static API가 새로 생겼습니다. 기존엔 server API와 client API만 존재하였습니다.
+
+React19에서 `react-dom/static` 에 포함되는 API는 아래의 두 개입니다.
+
+- prerender
+- prerenderToNodeStream
+
+prerender는 리액트 컴포넌트(ReactNode)를 받아, HTML string을 리턴하는 함수입니다.
+prerender는 server API인 renderToString과 닮아있습니다.
+둘 모두 리액트 컴포넌트(ReactNode)를 받아, HTML string을 리턴하는 함수이기 때문입니다.
+
+renderToString과 prerender의 차이.
+우선 renderToString은 리액트 컴포넌트를 서버에서 HTML string으로 바꿔주는 API입니다.
+하지만 renderToString은 data fetching을 기다리는 기능이 존재하지 않았습니다.
+반면 prerender는 data fetching이 모두 끝날때까지 기다린후 HTML string을 생성합니다.
+
+#### 그래서 prerender 언제써야하죠?
+
+renderToString, renderToReadableStream, prerender 이 구체적으로 어떤 차이가 나는 것일까요?
+renderToString은 위에서 설명하였듯 data fetching을 기다리는 기능이 존재하지않기때문에 내부에 Suspense를 사용하고 있을 경우 사용할수없습니다.
+즉 Suspense가 존재하지않는 간단한 컴포넌트에만 사용할 수 있습니다.
+
+Suspense를 지원하고자하는 경우
+renderToReadableStream과 prerender 두가지 선택지가 남습니다.
+
+이 중 전자는 Suspense내의 data fetching을 모두 기다리지않고, 완료되지않은 동안은 대체 fallback을 보여주면서, 데이터 fetching이 완료될때마다 그 부분만 추가로 데이터를 보내서 채웁니다.
+
+만면 prerender는 Suspense내의 모든 data fetching을 해서 App을 render해둡니다. 서버를 켠 지 얼마 안되어서 아직 data fetching 중이라면 서버는 컴포넌트를 응답하지않습니다.
+
+### React는 더이상 UMD 빌드를 생성하지 않습니다.
+
+( 덕분에 테스팅 & 릴리즈 관리 복잡성이 완화됩니다. )
+
+UMD의 기능은 이제
+
+```html
+<script type="module">
+  // 리액트 코드
+</script>
+```
+
+의 script태그로 대체할 수 있습니다.
+
+### 참고한 레퍼런스
+
+**react-dom**
+
+- https://react.dev/blog/2024/12/05/react-19#new-react-dom-static-apis
+- https://react.dev/reference/react-dom/static/prerender
+
+**ref callback**
+
+- https://react.dev/reference/react-dom/components/common#ref-callback
+- https://react.dev/learn/manipulating-the-dom-with-refs#how-to-manage-a-list-of-refs-using-a-ref-callback
+
+**script tag**
+
+- https://react.dev/reference/react-dom/components/script
+- https://react.dev/reference/react-dom/preinit

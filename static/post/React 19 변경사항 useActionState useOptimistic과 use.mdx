@@ -1,0 +1,398 @@
+---
+slug: React-19-변경사항-useActionState-useOptimistic-과-use
+date: 2024-12-15
+title: React 19 변경사항 / useActionState, useOptimistic 과 use
+summary: React 19에 새로도입된 다양한 훅과 개념을 다룹니다.
+tags: ['React', '공식문서']
+---
+
+지난 포스팅에서 React 19 변경사항 중 `react-dom`변경사항을 모두 다뤄보았는데요.
+
+이번 포스팅에서는 `react`에 새로 생긴 기능인 useActionState, useOptimistic 등의 훅과 use API에 대해 다뤄보겠습니다.
+
+이번 React19 업데이트에서는 action이라는 새로운 개념이 등장하였고, 매우 중요하게 다뤄졌습니다.
+
+## Action
+
+React 19는 async한 transition 함수를 **Action**이라고 정의하였습니다.
+
+먼저 **async한 transition함수**가 무엇일까요? 그전에 transition은 또 무엇일까요?
+
+React에서는 **transition**을 아래와 같이 정의하고 있습니다.
+
+> "A function that updates some state by calling one or more set functions." -React docs-
+
+**transition은 내부에서 1개이상의 setState를 호출하는 함수**입니다.
+
+transition이 명확해졌다면, async transition은 간단합니다.
+**async함수 내부에 setState가 존재할 경우 async transition**입니다.
+
+fetch를 하고, 그와 관련된 결과를 setState하고싶다면, async함수내에 setState를 넣어야할 것입니다. 따라서 이런 함수는 async transition이라고 할 수 있습니다.
+
+이번에는 간단한 POST 요청을 보내는 form태그에서 isPending 상태를 관리하는 예제를 통해, 기존의 방식 코드와 React19 방식의 코드의 차이를 보여드리겠습니다.
+
+#### 기존
+
+```typescript
+// Before Actions
+function UpdateName({}) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState(null);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsPending(true);
+    const error = await updateName(name);
+    setIsPending(false);
+    if (error) {
+      setError(error);
+      return;
+    }
+    redirect("/path");
+  };
+
+  return (
+    <div>
+      <input value={name} onChange={(event) => setName(event.target.value)} />
+      <button onClick={handleSubmit} disabled={isPending}>
+        Update
+      </button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
+
+### React 18 : 기존에도 useTransition으로 isPending 상태를 관리할 수 있었습니다.
+
+```typescript
+// Using pending state from Actions
+function UpdateName({}) {
+  const [name, setName] = useState("");
+  const [error, setError] = useState(null);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = () => {
+    startTransition(async () => {
+      const error = await updateName(name);
+      if (error) {
+        setError(error);
+        return;
+      }
+      redirect("/path");
+    })
+  };
+
+  return (
+    <div>
+      <input value={name} onChange={(event) => setName(event.target.value)} />
+      <button onClick={handleSubmit} disabled={isPending}>
+        Update
+      </button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
+
+useTransition 자체는 React 18에도 존재하던 기능입니다.
+이 action 내에 isPending상태를 set해주는 부분이없음에도 자동으로 isPending 상태가 관리되고 있다는 점을 참고해주시면 좋겠습니다.
+
+pending 상태는 위에서 볼 수 있듯 useTransition을 사용하기만하면 되고,
+에러처리까지 고려하려면 useActionState를,
+낙관적 업데이트는 useOptimistic 훅을 통해 구현이가능합니다.
+
+### React 19 : useActionState를 통해, form제출에 대해 isPending과 상태를 한번에 관리할 수 있게 되었습니다.
+
+```typescript
+// Using <form> Actions and useActionState
+function ChangeName({ name, setName }) {
+  const [error, submitAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      const error = await updateName(formData.get("name"));
+      if (error) {
+        return error;
+      }
+      redirect("/path");
+      return null;
+    },
+    null,
+  );
+
+  return (
+    <form action={submitAction}>
+      <input type="text" name="name" />
+      <button type="submit" disabled={isPending}>Update</button>
+      {error && <p>{error}</p>}
+    </form>
+  );
+}
+```
+
+React 19는 **action**의 pending 상태, 에러처리, 폼, 낙관적 업데이트를 알아서 처리해주는 것에 신경을 많이 썼습니다.
+action상태를 일괄적으로 처리하기위해 특별히 useActionState라는 훅을 추가로 만들어주었습니다.
+
+추가로, \<form /\>태그에서 action prop을 지원하게되었습니다.
+
+useActionState를 사용하면, isPending 뿐아니라, 상태 하나를 추가로 사용할 수 있습니다.
+
+원래 useActionState의 첫번째 인자는 error를 보관하는 곳은 아니고, 상태를 보관하는 곳인데, 이 예제에서 상태에 error를 보관하고 있을 뿐입니다.
+
+기존엔
+const error = useState('');
+const \[isPending, startTransition] = useTransition();
+방식으로 할 수 있던 기능을
+
+`useActionState`가 한 번에 할 수 있게 되었다고 봐주시면 좋겠습니다.
+
+뿐 만 아니라, const name = useState(''); 부분도 필요없어졌습니다.
+
+그 이유는 useActionState의 콜백에서 formData를 받아서 쓸 수 있기때문입니다.
+( 다만 자연스럽게 위 예시에서 input 태그가 비제어 컴포넌트가 되었는데, 이 부분에 대해서는 추후 다뤄보면 좋겠습니다. )
+
+### useFormStatus : form이 제출(POST)중인지 여부를 판단하는 훅이 추가되었습니다.
+
+위에서 본 useActionState가 반환하는 error, submitAction, isPending 값 중에서,
+isPending 기능만 똑 떼온것이 useFormStatus 입니다.
+
+```typescript
+function DesignButton() {
+  const {pending} = useFormStatus();
+  return <button type="submit" disabled={pending} />
+}
+```
+
+이와같이 form에서 제출(POST)를 발생시키고 그 응답이 돌아오기 전까지를 pending상태로 정의하고 있습니다. pending여부를 boolean값으로 받아올 수 있습니다.
+
+이 훅은 form태그로 감싸져있는 자식 컴포넌트 에서만 사용할 수 있습니다.
+form 태그가 일종의 Context Provider처럼 동작한다고 봐주셔도 무방합니다.
+상세 : [useFormStatus 문서](https://react.dev/reference/react-dom/hooks/useFormStatus)
+
+```
+이 훅이 제공된 이유 :
+디자인 컴포넌트들에서 \<form\>이 제출중인지아닌지에 따라 다른 UI를 보여주고 싶은 경우가 많아 제공됨.
+```
+
+### useOptimistic : 폼 action내에서 낙관적업데이트를 위한 훅. action내에서도 setState가 즉시 반영된다.
+
+```typescript
+
+function ChangeName({currentName, onUpdateName}) {
+  const [optimisticName, setOptimisticName] = useOptimistic(currentName);
+
+  const submitAction = async formData => {
+    const newName = formData.get("name");
+    setOptimisticName(newName);
+    const updatedName = await updateName(newName);
+    onUpdateName(updatedName);
+  };
+
+  return (
+    <form action={submitAction}>
+      <p>Your name is: {optimisticName}</p>
+      <p>
+        <label>Change Name:</label>
+        <input
+          type="text"
+          name="name"
+          disabled={currentName !== optimisticName}
+        />
+      </p>
+    </form>
+  );
+}
+```
+
+사실 이 훅을 처음보았을때
+
+```typescript
+const [optimisticName, setOptimisticName] = useState(currentName);
+```
+
+```typescript
+const [optimisticName, setOptimisticName] = useOptimistic(currentName);
+```
+
+"그냥 useState와의 차이가 뭐지?" 하는 의문이 들어 직접 구현해보고 그 결과를 보았습니다.
+
+#### useOptimistic을 이용하여 form을 구현
+
+```typescript
+import { useOptimistic, useState } from "react";
+
+const updateName = (name: string) => new Promise((resolve) => setTimeout(() => resolve(name), 5000));
+export default function FormActionTest() {
+  const [name, setName] = useState("name");
+  const handleUpdateName = setName;
+  return (
+    <ChangeName
+      currentName={name}
+      onUpdateName={handleUpdateName}
+    />
+  );
+}
+
+function ChangeName({ currentName, onUpdateName }: { currentName: string; onUpdateName: (name: string) => void }) {
+  const [optimisticName, setOptimisticName] = useOptimistic(currentName);
+
+  const submitAction = async (formData: FormData) => {
+    const newName = formData.get("name");
+    setOptimisticName(newName as string);
+    const updatedName = await updateName(newName as string);
+    onUpdateName(updatedName as string);
+  };
+
+  return (
+    <form action={submitAction}>
+      <p>Your name is: {optimisticName}</p>
+      <p>
+        <label>Change Name:</label>
+        <input
+          type="text"
+          name="name"
+          disabled={currentName !== optimisticName}
+        />
+      </p>
+    </form>
+  );
+}
+
+```
+
+코드를 위와같이 구현하면
+![](https://velog.velcdn.com/images/skiende74/post/8c493a54-c66e-43b7-adf6-bf5e5f18e009/image.png)
+
+처음엔 이와같이 default name이 표시되어 있는 상태이다가,
+
+abcd 입력후 엔터키 입력시
+![](https://velog.velcdn.com/images/skiende74/post/44e3010b-a47f-4146-847a-5fd624b3256b/image.png)
+
+Your name은 즉시 abcd로 바뀌고 (낙관적 렌더링)
+updateName()함수 응답을 기다리는 5초동안은 form입력을 막고있습니다. (Pending 상태관리. pending여부판단에 optimistic state를 이용한 셈)
+
+이제 useOptimistic 부분만 useState로 바꿔줘보았습니다.
+
+```
+  const [optimisticName, setOptimisticName] = useState(currentName);
+```
+
+그 결과 동작은 엔터키 입력시에도 여전히 default name이 표시되다,
+updateName()함수가 끝난 5초가 지나서야 Your name이 업데이트되었습니다.
+
+더 납득이 되지않아 form action 대신 기존의 방식대로 form의 onSubmit prop에 해당 함수를 넘겨줘봤습니다.
+
+#### action없이 기존방식으로 낙관적 렌더링을 구현
+
+```typescript
+import { ChangeEvent, useCallback,  useState } from "react";
+
+const updateName = (name: string) => new Promise((resolve) => setTimeout(() => resolve(name), 5000));
+export default function FormActionTest() {
+  const [name, setName] = useState("default name");
+  const handleUpdateName = setName;
+  return (
+    <ChangeName
+      currentName={name}
+      onUpdateName={handleUpdateName}
+    />
+  );
+}
+
+function ChangeName({ currentName, onUpdateName }: { currentName: string; onUpdateName: (name: string) => void }) {
+  const [optimisticName, setOptimisticName] = useState(currentName);
+  const [a, setA] = useState(currentName);
+  const submitAction = useCallback(
+    async (e: ChangeEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const newName = a;
+      setOptimisticName(newName as string);
+      const updatedName = await updateName(newName as string);
+      onUpdateName(updatedName as string);
+    },
+    [a, onUpdateName]
+  );
+
+  return (
+    <form onSubmit={submitAction}>
+      <p>Your name is: {optimisticName}</p>
+      <p>
+        <label>Change Name:</label>
+        <input
+          type="text"
+          name="name"
+          value={a}
+          onChange={(e) => setA(e.target.value)}
+          disabled={currentName !== optimisticName}
+        />
+      </p>
+    </form>
+  );
+}
+```
+
+그 결과 useOptimistic을 썼을때와 동일하게 동작하였습니다.
+(abcd 입력후 엔터클릭시 낙관적 렌더링이 정상적으로 발생하고,
+5초뒤에 disabled가 풀림)
+
+따라서 첫 의문은 타당했고,
+useState를 놔두고 useOptimistic을 사용해주어야 할 이유는
+이유는 밝히지 않고있지만, 현행 form action은
+action내의 모든 상태업데이트를 즉시반영하지않고, 모든 함수실행이 끝난 후까지 연기한 다음 업데이트하도록 강제하고 있는 것으로 보입니다.
+
+따라서 form action을 사용할 때 즉시업데이트를 하고싶은 경우 useState대신 useOptimisticState를 사용해주어야겠습니다.
+
+### use : Promise나 Context를 읽는 use API.
+
+use는 서버컴포넌트에서 클라이언트컴포넌트에 값을 내려줄 때 유용한 훅입니다.
+이 상황에서 클라이언트컴포넌트에서 use를 통해 서버에서 내려준 Promise를 사용할 수 있습니다.
+
+```typescript
+import { fetchMessage } from './lib.js';
+import { Message } from './message.js';
+
+export default function App() {
+  const messagePromise = fetchMessage();
+  return (
+    <Suspense fallback={<p>waiting for message...</p>}>
+      <Message messagePromise={messagePromise} />
+    </Suspense>
+  );
+}
+
+// message.js
+'use client';
+
+import { use } from 'react';
+
+export function Message({ messagePromise }) {
+  const messageContent = use(messagePromise);
+  return <p>Here is the message: {messageContent}</p>;
+}
+
+```
+
+위는 서버컴포넌트인 App에서, 클라이언트컴포넌트인 Message로
+Promise를 내려주고 있고, use를 통해 이를 활용하고 있는 모습입니다.
+fetch가 종료되기전의 시간동안은 Suspense fallback을 보여줍니다.
+
+여기서 하나의 선택지가 더 있는데,
+서버컴포넌트에서 `await fetchMessage()`한 결과를 내려줄 것이냐,
+`fetchMessage()`만 하여 내려줄 것이냐입니다.
+공식문서에서는 await하지 않고 내려줄것을 권장하고있습니다.
+await할 경우 네트워크 응답동안 서버컴포넌트 응답이 block되기때문입니다.
+(await하지 않은 경우는 streaming SSR로 작동합니다.)
+
+React로 CSR SPA를 구현한 상황에서는 use() API를 활용할 방법이 많지 않아보입니다. useAPI에 넘기는 Promise는 반드시 서버컴포넌트에서 만들어진 Promise여야하기때문입니다.
+오히려 Next와같은 SSR 프레임워크 개발자가 내부적으로 사용하기에 유용한훅이아닌가 싶습니다.
+
+또 use는 useContext 대신에 사용할 수 있습니다만,
+이점이 있는 것이 아니기때문에 굳이 use만을 특별히 더 선호할 이유도 없어보입니다.
+
+use의 독특한 특징이라면,
+API로 분류되기때문에 if 조건문 내부에 사용할 수 있다는 장점이 있습니다.
+
+### 레퍼런스
+
+- [React 19](https://react.dev/blog/2024/12/05/react-19)
+- [useOptimistic훅](https://react.dev/reference/react/useOptimistic)
+- [use API](https://react.dev/reference/react/use)

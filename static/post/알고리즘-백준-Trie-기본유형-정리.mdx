@@ -1,0 +1,126 @@
+---
+slug: 알고리즘-백준-Trie-기본유형-정리
+date: 2024-06-10
+title: 알고리즘 백준 - Trie 기본유형 정리
+summary: 백준 Trie 기본유형 문제들을 토대로 기본적 풀이방법을 정리합니다.
+tags: [알고리즘, 알고리즘 정리]
+---
+
+#### 기본설명 :
+
+보편적 for 순회로는
+단어장에서 내 단어를 찾는데 O(N\*M)이 걸린다.
+
+하지만 단어사전을 Tree 형태로 구현한다면,
+O(M)의 시간만에 존재성 체크가 가능하다.
+
+아래 문제들은 사실상 거의 단일유형이다. (search유형)
+
+가끔 시간조건이 빡빡한 문제는
+self.children={}에 넣을때
+c = ord(c)-ord('a')처리를 해줘야 한다.
+(해싱 비용조차절감)
+
+#### 상세
+
+['abc','de',...] 으로, 평균길이가 M이고, N개의 단어가 든 단어사전이 있을 때
+내 단어 'abcd' (길이 M)가 이 사전에 포함되었는지를 세려면
+O(N\*M) 의 시간이 걸리기 때문이다.
+
+#### 여담
+
+잘하는 사람은 Trie 클래스를 안쓰고 {}만으로 구현을 하는 사람도 있던데, 그걸 익히는 것도 좋아보인다.
+
+아래에 적어둔 구현 코드를 이용하면 보편적인 Trie문제에는 대응할 수 있다.
+
+## 문제 시작
+
+---
+
+https://boj.kr/5052 (G4. 전화번호목록)
+숫자전화번호
+
+prefix 유형이다.
+
+접두어(prefix) 존재여부체크는 search 하다가 도중에 is_end를 만나면 True를 뱉게만 고치면 된다.
+
+911
+97625.. 같은
+번호를 1만개 제공하는데, 한 번호가 다른번호의 접두어가 되면 안된다.
+
+---
+
+https://boj.kr/5670 (P4. 휴대폰 자판)
+단어 자동입력 구현(체크)이다.
+
+즉 그냥 search 유형이다.
+
+단어를 Trie에 다 넣어놓고,
+children의 갯수가 1일때는 카운트하지않고,
+2이상일때는 카운트해서 그것을 평균내면된다.
+
+---
+
+https://boj.kr/9202 (P5. Boggle)
+격자보드에서 단어찾기게임이다. (가로세로대각선)
+
+search 함수를 만들어
+모든 for i, j 격자점에 8방으로 search함수를 돌린다(dfs).
+오락가락 안하려면 visited는 기억
+
+---
+
+https://boj.kr/13505 (P3. 두 수 XOR)
+XOR합이 가장큰 두 수를 찾는 문제이다.
+
+단어가 XOR로 바뀌었을 뿐 동일하다.
+
+숫자 \<-\> 이진수 변환해주는 함수를 각각 만들어줘야한다.
+
+단순 for로하면 i,j 쌍이므로 O(N^2)이지만,
+Trie에 다넣어놓고 순회하면 O(N)에 가능하다.
+(이진트리)
+
+---
+
+https://boj.kr/19585 (P3. 전설)
+색상 + 단어
+방식으로 닉네임을 짓는데,
+색상사전, 단어사전에 있는 걸로 지었는지 체크하는 문제이다.
+
+색상사전(prefix), 단어사전(suffix)준비해서
+prefix 검사시 is_end만날때마다 그 위치에 모두 체크를해둔다. (그냥 prefix 만났다고 바로끝내지않음)
+그리고 suffix 검사시에 정확히 동일한 위치에서 끝나면 해결
+
+단순 prefix/suffix 패턴으로 풀리는게 아니라
+무조건 색상 + 단어 패턴이 아닐수도있고
+색상+색상+단어 이런식으로 엉망으로 줄 수도 있고
+다른 복잡한 가능성도 있어서
+이 걸 처리하는 게 관건이었다.
+
+---
+
+구현 코드
+
+```python
+class Trie:
+	def __init__(self):
+    	self.children = {}
+        self.is_end = False
+root = Trie()
+def add(word):
+	t = root
+	for w in word:
+    	if w not in t.children: t.children[w] = Trie()
+    	t = t.children[w]
+    t.is_end=True
+def search(word):
+	t = root
+    for w in word:
+    	if w not in t.children: return False
+        t = t.children[w]
+    return t.is_end
+```
+
+좋은 후속 블로그
+[아호코라식 - Ries 블로그](https://m.blog.naver.com/kks227/220992598966)

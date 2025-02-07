@@ -8,7 +8,7 @@ interface Frontmatter {
   title: string
   date: string
   tags?: string[]
-  content?: string
+  summary?: string
 }
 interface MDXFile {
   frontmatter: Frontmatter
@@ -39,6 +39,8 @@ async function makeMDXFileObj(filesPromise: Promise<MDXFile>[]) {
   files.forEach((file) => {
     MdxFileObj[file.frontmatter.slug] = file
   })
+
+  // 날짜 기준 역순 정렬
 }
 
 const filesPromise = filenames.map(
