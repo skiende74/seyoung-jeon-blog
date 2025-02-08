@@ -1,6 +1,4 @@
-NextJS로 관리하고 있는 블로그입니다.
-
-NextJS 15와 app라우터를 적극적으로 활용합니다.
+NextJS 15의 app라우터, mdx-component를 적극적으로 활용하여 관리하는 블로그입니다.
 
 mdx-component를 이용해 mdx를 렌더링하고
 
