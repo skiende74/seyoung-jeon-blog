@@ -9,11 +9,10 @@ async function page({ params }: { params: Promise<{ slug: string }> }) {
 
   const { title, date } = frontmatter
   return (
-    <article>
+    <article className="mt-5 mb-20 rounded-xl bg-neutral-700 px-15 py-10">
       <h1>{title}</h1>
       <div className="text-right">{date}</div>
       <MDXPost />
-      <div className="h-30" />
     </article>
   )
 }
