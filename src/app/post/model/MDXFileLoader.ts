@@ -28,17 +28,18 @@ class MDXFileLoader {
   }
 
   async load() {
+    console.log('load FIles')
     const filesPromise = this.#filenames.map(
       (filename) => import('../../../../static/post/' + filename)
     )
 
     const files = await Promise.all(filesPromise)
     files.forEach((file) => {
-      this.#mdxFiles.concat(file)
+      this.#mdxFiles.push(file)
     })
   }
 }
 
 const mdxFileLoaderInstance = new MDXFileLoader()
-mdxFileLoaderInstance.load()
+await mdxFileLoaderInstance.load()
 export default mdxFileLoaderInstance

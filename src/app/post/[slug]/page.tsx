@@ -1,6 +1,5 @@
 import React from 'react'
 import { getMDXFileMapper } from '../model/getMdxFileMapper'
-import mdxFileLoaderInstance from '../model/MDXFileLoader'
 import mdxFileService from '../model/MDXFileService'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
