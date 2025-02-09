@@ -10,7 +10,7 @@ interface Frontmatter {
   tags?: string[]
   summary?: string
 }
-interface MDXFile {
+export interface MDXFile {
   frontmatter: Frontmatter
   default: FC
 }

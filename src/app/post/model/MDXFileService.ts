@@ -1,43 +1,38 @@
-import { readdirSync } from 'fs'
-import path from 'path'
-import { cwd } from 'process'
-import { FC } from 'react'
+import { MDXFile } from './getMdxFileMapper'
+import mdxFileLoader from './MDXFileLoader'
 
-export interface Frontmatter {
-  slug: string
-  title: string
-  date: string
-  tags?: string[]
-  summary?: string
-}
+class MDXFileService {
+  #mdxLoader = mdxFileLoader
+  #slugMapper: Record<string, MDXFile> = {}
+  #tagMapper: Record<string, MDXFile[]> = {}
 
-interface MDXFile {
-  frontmatter: Frontmatter
-  default: FC
-}
-
-class MDXFileLoader {
-  #mdxFileObj: Record<string, MDXFile> = {}
-  #MDX_PATH = path.join(cwd(), 'static/post')
-  #filenames = readdirSync(this.#MDX_PATH)
-
-  async getMapper() {
-    const alreadyLoaded = Object.keys(this.#mdxFileObj).length > 0
-    if (!alreadyLoaded) await this.#loadMDXFileObj()
-    return this.#mdxFileObj
+  constructor() {
+    this.#makeBySlug()
+    this.#makeByTag()
+  }
+  getBySlug() {
+    return this.#slugMapper
+  }
+  getByTag() {
+    return this.#tagMapper
   }
 
-  async #loadMDXFileObj() {
-    const filesPromise = this.#filenames.map(
-      (filename) => import('../../../../static/post/' + filename)
-    )
-
-    const files = await Promise.all(filesPromise)
-    files.forEach((file) => {
-      this.#mdxFileObj[file.frontmatter.slug] = file
+  async #makeBySlug() {
+    const mdxFiles = await this.#mdxLoader.get()
+    mdxFiles.forEach((file) => {
+      this.#slugMapper[file.frontmatter.slug] = file
+    })
+  }
+  async #makeByTag() {
+    const mdxFiles = await this.#mdxLoader.get()
+    mdxFiles.forEach((file) => {
+      file.frontmatter.tags?.forEach((tag) => {
+        if (!(tag in this.#tagMapper)) this.#tagMapper[tag] = []
+        this.#tagMapper[tag].push(file)
+      })
     })
   }
 }
 
-const mdxFileLoader = new MDXFileLoader()
-export default mdxFileLoader
+const mdxFileService = new MDXFileService()
+export default mdxFileService
