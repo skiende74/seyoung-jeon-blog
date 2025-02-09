@@ -1,0 +1,72 @@
+---
+slug: git-hooks-pair-commit
+title: git hooks를 이용하여 페어프로그래밍시 공동커밋 자동화하기
+date: 2024-04-30
+summary: git hooks의 prepare-commit-msg를 이용하여 공동커밋을 작성합니다.
+tags: [git]
+---
+
+### 방법 1. .gitmessage.txt 사용
+
+루트폴더에 .gitmessage.txt파일을 넣어두면
+vscode 커밋시 템플릿에서 불러와져서 편리하다.
+
+하지만, cmd 커맨드라인에서 git commit -m " "을 사용할 경우 적용되지 않아 불편하다.
+
+### 방법2. Git hooks 사용하기
+
+git hooks의 prepare-commit-msg를 이용하면
+커맨드라인 커밋, vscode 커밋 모두에 일괄적용할 수 있다.
+
+원리는 내가 커밋한 메시지를 일종의 함수(쉘스크립트)로 가공한 결과를 사용하는 것
+
+git commit -m "메시지" 로 작성하더라도
+아래와 같이 자동으로 붙어 동작한다.
+![](https://velog.velcdn.com/images/skiende74/post/ca012016-fd2b-416e-939c-41270ac6dcb3/image.png)
+
+![](https://velog.velcdn.com/images/skiende74/post/a157ca32-7e32-4ed7-ab1d-db3c31a4e10c/image.png)
+
+### git hooks 적용방법
+
+.git/hooks에서 prepare-commit-msg.sample이라는 파일명을
+prepare-commit-msg으로 수정.
+
+내부 내용을
+
+```
+#!/bin/sh
+COMMIT_MSG_FILE=$1
+printf "\nCo-authored-by: skiende74 <skiende74@gmail.com>" >> $COMMIT_MSG_FILE
+```
+
+으로 대체.
+
+닉네임 \<이메일\>은 바꿔서 사용해주세요.
+(#!/bin/sh 도 빠짐없이 넣어주세요.)
+
+### 내용의 의미
+
+간결히 설명도 드리겠습니다.
+이 구문은 쉘 스크립트 명령어로 쓰여져있는데요.
+`#!/bin/sh`은 아래 내용이 쉘 스크립트 문법으로 작성되었다는 의미입니다.
+
+COMMIT_MSG_FILE 라는 변수에 두번째 인자(=$1. 첫번째인자는 $0)를 넣어서
+저 결과를 print한다는 것입니다.
+(변수명은 꼭 COMMIT_MSG_FILE이 아니라도 됩니다. 자유롭게 지어도 됩니다.)
+
+`>>`은 출력결과를 오른쪽 파일에 append하는 리눅스(쉘) 명령어입니다.
+
+또, 변수명을 정의할때는 달러를 붙이지 않지만(COMMIT_MSG_FILE), 사용할때는 $를 붙여사용합니다.($COMMIT_MSG_FILE)
+
+따라서, 이 쉘스크립트는
+
+- git commit 명령이 발생할 때,
+- 커밋메시지를 가로채고,
+- 기존에 보내려던 커밋메시지 뒤에 특정 문자열('Co-author..')을 추가해서 printf 해주고있습니다.
+
+(printf는 콘솔(표준출력)에 출력하는 명령입니다.)
+
+하지만 printf한 결과물이 commit메시지를 대체하는 것으로 볼 때,
+git hooks는 commit이 발생할 때, prepare-commit-msg 훅을 실행시키고.
+표준 출력을 가로채서 그 결과물로 커밋메세지를 대체한다.
+라고 추측해볼 수 있습니다.

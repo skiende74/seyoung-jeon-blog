@@ -1,0 +1,154 @@
+---
+slug: 완전탐색-실버유형-정리
+title: 완전탐색 실버유형 정리
+date: 2024-02-23
+summary: 백준 완전탐색 유형의 실버난이도 대표문제 및 풀이들을 다룹니다.
+tags: [PS]
+---
+
+완탐 유형정리.
+크게 격자유형과 그래프유형으로 나누어짐.
+
+기본유형은 dfs를 한번호출하지만,
+격자유형에서는 2중 for문을 순회해서 dfs를 호출할 수 있음.
+
+inner_count, outer_count를 구하는 게 거의 대부분.
+다만 dfs로는 쉽지않고 bfs로 푸는게 훨씬나은 문제도 많음.
+
+dfs는 초기구현이 쉽지만,
+**일부 유형**에선 거의 **bfs로 풀어야해서**
+bfs가 범용성이 좋은 편
+
+유형 정리 [링크](https://solved.ac/search?query=*s+%26+%23graph_traversal+&page=1&sort=solved&direction=desc)
+
+## 미로탐색 (2178. 격자유형)
+
+![](https://velog.velcdn.com/images/skiende74/post/888e071b-32fa-4f1b-92fa-bdd85506e33e/image.png)
+(1,1)에서 (N,M)으로 이동하는데 걸리는 최소 이동수를 구하는 문제에요.
+
+<details>
+  <summary>풀이</summary>
+  bfs를 짜서 bs(1,1)를 호출. 1인 곳만 이동하게 하고, dfs 내부에서 count += 1씩
+  하면 돼요.
+</details>
+
+## 바이러스 (2606. 그래프유형)
+
+![](https://velog.velcdn.com/images/skiende74/post/e55960fb-6bef-4a40-be60-ca4c6eeb664e/image.png)
+1번 컴퓨터가 바이러스에 걸렸어요. 전염되는 컴퓨터 대수는?
+(그림상으론 4개. 1번은 제외)
+
+<details>
+  <summary>풀이</summary>
+  dfs를 짜서 dfs(1)를 호출. 연결된 그래프끼리 이동하게하고, 이동때 count += 1씩
+  하면 돼요.
+</details>
+
+## 단지 번호붙이기 - for문으로 호출하는 dfs (2667)
+
+![](https://velog.velcdn.com/images/skiende74/post/3c395f42-3f4e-4872-8767-b008e260ea68/image.png)
+그림처럼 단지에 번호를 붙여서 단지별 갯수를 리턴
+첫째줄엔 총 단지수, 그 다음줄부터 단지별 갯수출력 (적은순 정렬)
+그림의 경우엔 3 7 8 9 를 출력
+
+<details>
+  <summary>풀이</summary>
+  이중 for문으로 격자 전체를순회하며 not visited 발견할때마다 dfs로 호출. dfs를
+  호출할때마다 inner_count = 1로 만들어주고. 호출후 inner_count를 result배열에
+  넣어서 나중에 프린트
+</details>
+
+### 중간 설명시작.
+
+### 2중 for문으로 호출하는 dfs 유형.
+
+이 유형에서는 2종류의 count 변수가 가능함.
+
+- outer_count : 2중 for문에서 dfs를 총 몇번 호출했는지를 저장.
+- inner_count : 한번의 dfs 호출에서 몇번의 재귀호출이 발생했는지를 기억하는 변수.
+
+단지 번호붙이기에서
+outer_count : 단지 총 갯수를 의미
+inner_count : 단지마다 존재하는 칸 갯수들을 의미
+
+## 유기농 배추 - 2중for문호출 dfs유형 (1012)
+
+![](https://velog.velcdn.com/images/skiende74/post/8835ff63-121d-4369-b94d-893ea7a642c0/image.png)
+1이 배추. 배추영역 갯수 세라!
+
+<details>
+  <summary>풀이</summary>
+  이중 for문으로 격자 전체를순회하며 not visited && 1 발견할때마다 dfs로 호출.
+  outer_count를 print하면 정답.
+</details>
+
+## 숨바꼭질 - bfs 유형 !! (1697)
+
+수빈이의 위치가 X일때 걷는다면 1초후에 X-1, X+1, or 2X로 이동하게된다.
+수빈이와 동생의 위치가 정해졌을때, 가장 빨리 찾을 수 있는 시간은?
+0\<N\<100,000
+
+<details>
+  <summary>풀이</summary>
+  시간복잡도 때문에 조금당황스러울수있는유형 bfs로 풀면 결국 간 곳은
+  다시방문할필요가없음. (왜냐하면 가까운길을 먼저가기때문에, 재방문불필요)
+  따라서 bfs로 3가지경우 방문계속돌리면 O(N) 복잡도 순회가 가능
+</details>
+
+## 연결요소의 개수 (11724)
+
+방향 없는 그래프가 주어졌을 때, 연결 요소 (Connected Component)의 개수를 구하는 프로그램을 작성하시오.
+-> 그냥 연결된 그래프 그룹몇갠지 세는 문제.
+
+<details>
+  <summary>풀이</summary>
+  그냥 for에서 호출하는 dfs풀이로 해서. outer_counter를 출력하면 정답.
+</details>
+
+## 트리의 부모 찾기 (11725)
+
+루트 없는 트리가 주어진다. 이때, 트리의 루트를 1이라고 정했을 때, 각 노드의 부모를 구하는 프로그램을 작성하시오.
+![](https://velog.velcdn.com/images/skiende74/post/c7e41b4b-14e5-40a5-b256-07d973601f8e/image.png)
+
+<details>
+  <summary>풀이</summary>
+  연결요소로 그래프를 만들어놓고. (인접리스트) dfs(1)로 호출하여, i를 자신, j를
+  상대방노드라할때, parent[j]=i로 하면 된다.
+</details>
+
+## A->B (16953)
+
+<details>
+  <summary>풀이</summary>
+  숨바꼭질(1697)과 거의 동일한 유형. 이를 완탐-변환유형(bfs)으로 칭함. bfs로
+  순회하면서 발견시, outer_count 리턴하면 됨 하지만 ! A에서 B를 순회하면 완탐
+  10억이라 걸림 !. B에서출발해서 A를만든다. 전에 이상하게 풀어놔서 (통과되게끔만
+  해놔서) 제대로된방식으로고침 아 이상하게푼게아니라 어차피계속줄어드니까
+  꼭완탐일필요까진없었구나
+</details>
+
+## 스타트링크 (5014)
+
+문제 : 1~F층까지있는 건물에서 S부터 출발해서 G층에 도착하려한다.
+엘리베이터 버튼은 U,D가 있으며, U만큼올라가거나 D만큼 내려간다.
+이때 G까지 도달하는데 필요한 버튼횟수는? (불가능한경우 'use the stairs'출력)
+
+<details>
+  <summary>풀이</summary>
+  완탐 유형. 마찬가지로 그냥순회하면됨. 이 문제는 pruning이 필요없지만, 그냥
+  다른문제에선 그럴까봐 그거싫어서 bfs로 풀었음. bfs에서 depth를 넘길땐 큐의
+  원소로 넘기기.. 그냥 무난하게 bfs짜고 depth 리턴하고, 루프끝나면 불가능
+  리턴하면됨 start=goal 인경우만 미리탈출시켜주고. 처음엔 배열초과뜨고, 그다음
+  엣지케이스에러뜨고. 배열초과 난 원인이 다른것이었는데 성급하게 N을
+  1000000으로고정해버린게 화근.
+</details>
+
+## 그림 (1926)
+
+문제 :
+![](https://velog.velcdn.com/images/skiende74/post/ccecfa6e-121e-4db8-a143-ff87b0cf676e/image.png)
+0과 1로 된 그리드를 줄테니 1로된 영역갯수, 영역최대크기를 각각 구하라는 문제.
+
+풀이 : 흔한 inner,outer count 문제 (영역갯수 + 영역최대크기)
+inner, outer_count 만들고 max_inner_count 이용해줌.
+for루프로 dfs진입시켜주면 해결.
