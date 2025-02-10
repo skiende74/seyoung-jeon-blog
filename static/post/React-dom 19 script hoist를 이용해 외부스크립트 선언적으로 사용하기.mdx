@@ -101,7 +101,6 @@ useExternalScript 없이도 훨씬 간결하게 구현할 수 있습니다.
 function KakaoMap() {
   const container = useRef(null);
   const init = () => {
-    console.log("init");
     window.kakao.maps.load(() => {
       const options = {
         center: new window.kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표.

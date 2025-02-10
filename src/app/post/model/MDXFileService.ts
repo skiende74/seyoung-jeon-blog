@@ -19,7 +19,7 @@ class MDXFileService {
 
   async #makeBySlug() {
     if (Object.keys(this.#slugMapper).length > 0) return
-    console.log('load')
+
     const mdxFiles = await this.#mdxLoader.get()
     mdxFiles.forEach((file) => {
       this.#slugMapper[file.frontmatter.slug] = file

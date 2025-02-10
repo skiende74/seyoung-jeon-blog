@@ -37,7 +37,6 @@ tags: [${tags.join(', ')}]
   const result = frontmatterString + content
   const fileName = title.replace(/[\s,]/, '-') + '.mdx'
   writeFileSync(path.join(cwd(), 'static/post', fileName), result)
-  console.log(`post: 글쓰기를 mdx파일로 저장완료 fileName:${fileName}`)
 
   return { isSuccess: true }
 }

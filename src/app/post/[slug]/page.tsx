@@ -4,10 +4,7 @@ import { getMDXBySlug } from '../model/MDXFileService'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  // const { default: MDXPost, frontmatter } = (await getMDXFileMapper())[
-  //   decodeURIComponent(slug)
-  // ]
-  console.log('page load')
+
   const { default: MDXPost, frontmatter } = (await getMDXBySlug())[
     decodeURIComponent(slug)
   ]

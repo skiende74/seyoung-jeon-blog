@@ -3,10 +3,10 @@ import createMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
-import rehypeHighlight, { Options } from 'rehype-highlight'
-import rehypeHighlightCodeLines, {
-  HighlightLinesOptions,
-} from 'rehype-highlight-code-lines'
+// import rehypeHighlight, { Options } from 'rehype-highlight'
+// import rehypeHighlightCodeLines, {
+//   HighlightLinesOptions,
+// } from 'rehype-highlight-code-lines'
 import rehypeCodeTitles from 'rehype-code-titles'
 import rehypePrismPlus from 'rehype-prism-plus'
 const nextConfig: NextConfig = {
