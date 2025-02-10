@@ -38,5 +38,7 @@ class MDXFileService {
 }
 
 const mdxFileService = new MDXFileService()
-await mdxFileService.init()
-export default mdxFileService
+await mdxFileService.init() // build 시, start시 딱한번씩만 실행됨.
+
+export const getMDXBySlug = async () => await mdxFileService.getBySlug()
+export const getMDXByTag = async () => await mdxFileService.getByTag()

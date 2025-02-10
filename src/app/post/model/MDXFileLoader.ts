@@ -28,7 +28,6 @@ class MDXFileLoader {
   }
 
   async load() {
-    console.log('load FIles')
     const filesPromise = this.#filenames.map(
       (filename) => import('../../../../static/post/' + filename)
     )
@@ -41,5 +40,5 @@ class MDXFileLoader {
 }
 
 const mdxFileLoaderInstance = new MDXFileLoader()
-await mdxFileLoaderInstance.load()
+await mdxFileLoaderInstance.load() // build 시, start시 딱한번씩만 실행됨.
 export default mdxFileLoaderInstance

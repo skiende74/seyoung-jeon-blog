@@ -1,14 +1,16 @@
 import React from 'react'
 import { getMDXFileMapper } from '../model/getMdxFileMapper'
-import mdxFileService from '../model/MDXFileService'
+import { getMDXBySlug } from '../model/MDXFileService'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   // const { default: MDXPost, frontmatter } = (await getMDXFileMapper())[
   //   decodeURIComponent(slug)
   // ]
-  const { default: MDXPost, frontmatter } =
-    mdxFileService.getBySlug()[decodeURIComponent(slug)]
+  console.log('page load')
+  const { default: MDXPost, frontmatter } = (await getMDXBySlug())[
+    decodeURIComponent(slug)
+  ]
 
   const { title, date } = frontmatter
   return (
