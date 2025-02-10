@@ -8,38 +8,66 @@
 
 #### 프로젝트
 
-### 방끗 - 우아한테크코스
+### 방끗 (체크리스트 모바일 웹) - <strong>우아한테크코스</strong>
 
-기간 : 2024. 7. \- 2024. 11.
+[서비스 바로가기](https://bang-ggood.com/), [레포지토리 링크](https://github.com/woowacourse-teams/2024-bang-ggood/), [피그마 페이지](https://www.figma.com/design/1BtfjtrUPLWxd7twWi3mN6/%EB%B0%A9%EB%81%97?node-id=1387-4082&node-type=CANVAS&t=KU3ibLfGOIWJYIrU-0)
 
-자취방을 구하는 사람이 방의 체크 사항을 빠르게 기록하고, 쉽게 확인할 수 있도록 돕는 서비스입니다. \
+기간 : 2024. 7. \- 2024. 11. 인원 : 프론트엔드 3, 백엔드 4
+
+자취방을 구하는 사람이 방의 체크 사항을 **빠르게 기록**하고, **쉽게 확인**할 수 있도록 돕는 서비스입니다. \
 부동산에 방문 및 10군데 정도의 방을 구경하며 서비스를 실사용해보았으며, \
 당시 짧은 시간 내에 체크하기엔 글이 너무 많다는 문제점을 발견하고 방향을 대폭 수정한 경험이 있습니다.
 
-[서비스 바로가기](https://bang-ggood.com/), [레포지토리 링크](https://github.com/woowacourse-teams/2024-bang-ggood/), [피그마 페이지](https://www.figma.com/design/1BtfjtrUPLWxd7twWi3mN6/%EB%B0%A9%EB%81%97?node-id=1387-4082&node-type=CANVAS&t=KU3ibLfGOIWJYIrU-0) \
-인원 : 프론트엔드 3, 백엔드 4
-
-##### 기술 스택
+##### 사용 기술
 
 React, TypeScript, React-Query, zustand, Emotion, MSW, Storybook \
 Webpack, Github Acitons, AWS S3 & Cloudfront, Sentry
 
-##### 협업 개선
+##### 협업 및 DX 개선
 
 - PR시 Github Action 통해 Storybook/chromatic 배포하고 배포주소를 덧글 작성 자동화 ([PR 링크]())
 - PR시 RTL테스팅과 모킹된 e2e 테스트환경을 구축하여 프로젝트 안정성 강화(PR링크, PR링크)
 - CI 테스트 시간을 단축하여 PR리뷰시 테스팅의 활용도, 신뢰성을 높임.
-- ts-loader를 esbuild-jest, concurrently(tsc)로 교체하여 테스팅 시간을 1/3로 단축 (PR 링크)
-- 모든 CI에 actions/cache@v4 (의존성캐싱)을 적용해 CI 시간 단축 (PR 링크)
-
-##### 개발 경험
-
-- 비밀번호 변경기능을 3단계로 나누고, 멀티스텝 페이지로 선언적으로 구현 (PR링크)
-- PR시 동작하는 모킹 cypress 테스트 구현하여 프로젝트 안정성 강화
-- 가장 복잡한 상태인 RoomInfo 상태관리를 테스트코드 함께 zustand로 구현 (PR 링크)
-- 공통컴포넌트 (Checkbox, Dropdown, Footer, FormField, RadioGroup, Input) 구현
-- 사용자가 탭 이동을 편하게 할 수 있는 useDrag 훅을 구현 (PR링크)
-- 번들최적화 및 이미지 최적화(preload)를 수행하여 로딩성능 3s->1.8s로 개선 (번들 PR, 이미지 최적화 PR)
+  - ts-loader를 esbuild-jest, concurrently(tsc)로 교체하여 테스팅 시간을 1/3로 단축 (PR 링크)
+  - 모든 CI에 actions/cache@v4 (의존성캐싱)을 적용해 CI 시간 단축 (PR 링크)
 - Webpack 환경 설정 및 CI 과정을 구축
   - svgr 사용시 width, height를 사용하기 위해 래핑 컴포넌트를 생성해야하는 문제를 해결하여 DX 개선(PR 링크)
+
+##### 개발 기여
+
+- 비밀번호 변경기능을 3단계로 나누고, **멀티스텝 페이지**로 선언적으로 구현 (PR링크)
+  - PR시 동작하는 **모킹 cypress 테스트** 구현하여 프로젝트 안정성 강화
+- 가장 복잡한 상태인 RoomInfo 상태관리를 테스트코드 함께 zustand로 구현 (PR 링크)
+- 사용자가 탭 이동을 편하게 할 수 있는 useDrag 훅을 구현 (PR링크)
+- 공통컴포넌트 (Checkbox, Dropdown, Footer, FormField, RadioGroup, Input) 구현
+- 번들최적화 및 이미지 최적화(preload)를 수행하여 로딩성능 3s->1.8s로 개선 (번들 PR, 이미지 최적화 PR)
 - AWS의 S3와 CloudFront, Gabia를 이용해 SSL 인증서를 받은 https 사이트 배포
+
+### NextJS mdx 기반 개인 블로그
+
+기간 : 2025. 02. ~ 2025. 02. (계속 사용중)
+인원 : 프론트엔드 1
+
+[레포지토리](https://github.com/skiende74/seyoung-jeon-blog)
+
+NextJS 15의 app라우터, mdx-component를 적극적으로 활용하여 관리하는 블로그입니다. \
+mdx-component를 이용해 mdx를 렌더링하고 server Action으로 통신하고 \
+Form action을 통해 게시글제출을 관리합니다. \
+( 제출 전략은 변경중. mdx파일을위한 별도의 저장소를 운용예정 )
+
+#### 활동
+
+우아한테크코스
+
+**배달의 민족** 개발사인 **우아한 형제들**에서 진행하는 개발자 교육 프로그램, 웹 프론트엔드 교육과정 수료
+
+“웹팩” 이라는 주제로 발표 경험 ( [발표 영상](https://www.youtube.com/watch?v=-m9xGyePEug) )
+
+UNIST - 기계공학과
+
+<small>2014. 02. - 2021. 08.</small>
+
+#### 자격증
+
+- 정보처리기사 ( 2024. 06. )
+- SQLD ( 2024. 11. )
