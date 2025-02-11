@@ -3,16 +3,28 @@ import Link from 'next/link'
 import React, { ReactNode } from 'react'
 import { FaGithub } from 'react-icons/fa'
 import { IoPersonSharp } from 'react-icons/io5'
-
+import VelogIcon from './velog.svg'
+import Image from 'next/image'
 interface NavIcon {
   href: Route
   icon: ReactNode
 }
+console.log(VelogIcon)
 
 const navIcons: NavIcon[] = [
   {
     href: 'https://velog.io/@skiende74',
-    icon: <div className="text-sm">velog</div>,
+    icon: (
+      <Image
+        src={VelogIcon.src}
+        width={24}
+        height={24}
+        color="yellow"
+        className="rounded-md bg-white"
+        alt="velog"
+      />
+    ),
+    // icon: <div className="text-sm">velog</div>,
   },
   {
     href: 'https://www.github.com/skiende74',
