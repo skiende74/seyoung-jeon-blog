@@ -11,6 +11,10 @@ interface NavIcon {
 
 const navIcons: NavIcon[] = [
   {
+    href: 'https://velog.io/@skiende74',
+    icon: <div className="text-sm">velog</div>,
+  },
+  {
     href: 'https://www.github.com/skiende74',
     icon: <FaGithub />,
   },
@@ -27,11 +31,11 @@ function Header({ title }: { title: string }) {
         <Link href="/">
           <div className="text-md font-semibold">{title}</div>
         </Link>
-        <ul className="flex gap-x-2">
+        <ul className="flex items-center gap-x-2.5">
           {navIcons.map(({ href, icon }) => (
-            <li key={href}>
-              <Link href={href}>{icon}</Link>
-            </li>
+            <Link key={href} href={href}>
+              {icon}
+            </Link>
           ))}
         </ul>
       </div>
