@@ -17,7 +17,7 @@ function GiscusComp() {
         inputPosition="bottom"
         theme="gruvbox_dark"
         lang="ko"
-        // loading={'lazy'}
+        loading={'lazy'}
       />
     </>
   )
