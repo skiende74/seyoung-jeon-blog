@@ -1,6 +1,7 @@
 import React from 'react'
 import { getMDXFileMapper } from '../model/getMdxFileMapper'
 import { getMDXBySlug } from '../model/MDXFileService'
+import GiscusComp from './Giscus'
 
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -15,6 +16,7 @@ async function page({ params }: { params: Promise<{ slug: string }> }) {
       <h1>{title}</h1>
       <div className="text-right">{date}</div>
       <MDXPost />
+      <GiscusComp />
     </article>
   )
 }
