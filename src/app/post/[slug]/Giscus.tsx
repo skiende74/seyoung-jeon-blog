@@ -6,10 +6,10 @@ function GiscusComp() {
   return (
     <>
       <Giscus
-        repo={process.env.GISCUS_REPO as `${string}/${string}`}
-        repoId={process.env.GISCUS_REPO_ID!}
+        repo={process.env.NEXT_PUBLIC_GISCUS_REPO as `${string}/${string}`}
+        repoId={process.env.NEXT_PUBLIC_GISCUS_REPO_ID!}
         category="Comments"
-        categoryId={process.env.GISCUS_CATEGORY_ID}
+        categoryId={process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID}
         mapping="pathname"
         strict="0"
         reactionsEnabled="1"
