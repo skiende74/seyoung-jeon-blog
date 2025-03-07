@@ -4,10 +4,11 @@ import PostingForm from './postingForms'
 async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const { default: MDX, frontmatter } = (await getMDXBySlug())[
+  const { default: _, ...mdxFile } = (await getMDXBySlug())[
     decodeURIComponent(slug)
   ]
-  return <PostingForm matter={frontmatter} />
+
+  return <PostingForm mdxFile={mdxFile} />
 }
 
 export default Page

@@ -12,6 +12,7 @@ interface Frontmatter {
 }
 export interface MDXFile {
   frontmatter: Frontmatter
+  rawMDX: string
   default: FC
 }
 

@@ -9,6 +9,7 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 // } from 'rehype-highlight-code-lines'
 import rehypeCodeTitles from 'rehype-code-titles'
 import rehypePrismPlus from 'rehype-prism-plus'
+import { remarkRawMdx } from './src/remark-raw-mdx'
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: { typedRoutes: true },
@@ -20,7 +21,12 @@ const nextConfig: NextConfig = {
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+    remarkPlugins: [
+      remarkGfm,
+      remarkFrontmatter,
+      remarkMdxFrontmatter,
+      remarkRawMdx,
+    ],
     rehypePlugins: [
       // rehypeHighlight,
       rehypeCodeTitles,

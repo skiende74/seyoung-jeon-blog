@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs'
 import path from 'path'
 import { cwd } from 'process'
-import { FC } from 'react'
+import { MDXFile } from './getMdxFileMapper'
 // import { makeMDX } from './remarkMdx'
 
 export interface Frontmatter {
@@ -10,11 +10,6 @@ export interface Frontmatter {
   date: string
   tags?: string[]
   summary?: string
-}
-
-interface MDXFile {
-  frontmatter: Frontmatter
-  default: FC
 }
 
 class MDXFileLoader {

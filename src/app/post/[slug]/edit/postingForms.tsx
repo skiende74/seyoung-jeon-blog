@@ -4,7 +4,8 @@ import useInputs from './useInput'
 import { submitAction } from './submitActions'
 import { MDXFile } from '../../model/getMdxFileMapper'
 
-function PostingForm({ matter }: { matter: MDXFile['frontmatter'] }) {
+function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
+  const { frontmatter: matter, rawMDX } = mdxFile
   const { date, slug, summary, title, tags } = matter
 
   const { state: inputState, handleChange } = useInputs({
@@ -15,7 +16,7 @@ function PostingForm({ matter }: { matter: MDXFile['frontmatter'] }) {
     tags: tags?.join(', ') ?? '',
   })
 
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState(rawMDX)
 
   const submitState = {
     title: inputState.title,

@@ -16,6 +16,8 @@
     "@next/mdx": "^15.1.6",
     "@tailwindcss/typography": "^0.5.16",
     "@uiw/react-md-editor": "^4.0.5",
+    "acorn": "^8.14.1",
+    "gray-matter": "^4.0.3",
     "next": "15.1.5",
     "next-mdx-remote": "^5.0.0",
     "prism-themes": "^1.9.0",
@@ -30,11 +32,15 @@
     "rehype-prism-plus": "^2.0.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
-    "remark-mdx-frontmatter": "^5.0.0"
+    "remark-mdx-frontmatter": "^5.0.0",
+    "unified": "^11.0.5",
+    "vfile": "^6.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.0.0",
+    "@types/estree": "^1.0.6",
+    "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.13",
     "@types/node": "^20",
     "@types/react": "^19",
