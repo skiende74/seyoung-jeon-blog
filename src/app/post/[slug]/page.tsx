@@ -6,13 +6,10 @@ import GiscusComp from './Giscus'
 async function page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const {
-    default: MDXPost,
-    frontmatter,
-    rawMDX,
-  } = (await getMDXBySlug())[decodeURIComponent(slug)]
+  const { default: MDXPost, frontmatter } = (await getMDXBySlug())[
+    decodeURIComponent(slug)
+  ]
 
-  console.log('rawMDX', rawMDX)
   const { title, date } = frontmatter
   return (
     <article className="mt-5 mb-20 rounded-xl bg-neutral-700 px-15 py-10">
