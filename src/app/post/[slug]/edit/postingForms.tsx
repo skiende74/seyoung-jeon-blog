@@ -62,16 +62,18 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
             !response.isSuccess &&
             `제출에 실패하였습니다. ${response.message}`}
         </div>
-        <div>
+        <div className="">
           <textarea
-            className="h-100 w-full rounded-sm border-neutral-300 bg-white px-3 py-0.5"
+            className="h-100 w-full flex-1 rounded-sm border-neutral-300 bg-white px-3 py-0.5"
             name="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
+          <div className="h-100 flex-1 overflow-y-auto">
+            <MdxClient mdxText={content} />
+          </div>
         </div>
       </form>
-      <MdxClient mdxText={content} />
     </div>
   )
 }
