@@ -15,7 +15,7 @@ function GiscusComp() {
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="bottom"
-        theme="dark_dimmed"
+        theme="gruvbox_dark"
         lang="ko"
         // loading={'lazy'}
       />
