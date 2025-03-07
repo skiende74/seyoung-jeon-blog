@@ -1,11 +1,10 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactElement } from 'react'
 import { evaluate } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
-import { MDXContent } from 'mdx/types'
 
 export default function MdxClient({ mdxText }: { mdxText: string }) {
-  const [CompiledMDX, setCompiledMDX] = useState<(() => MDXContent) | null>(
+  const [CompiledMDX, setCompiledMDX] = useState<(() => ReactElement) | null>(
     null
   )
 
@@ -19,7 +18,7 @@ export default function MdxClient({ mdxText }: { mdxText: string }) {
           // (선택) remarkPlugins, rehypePlugins 등 추가 설정 가능
         })
         // evaluate()가 반환하는 MdxComponent는 "MDX로부터 변환된 React 컴포넌트"
-        setCompiledMDX(() => MdxComponent)
+        setCompiledMDX(() => MdxComponent as () => ReactElement)
       } catch (err) {
         console.error('MDX 파싱 오류:', err)
         setCompiledMDX(null)
