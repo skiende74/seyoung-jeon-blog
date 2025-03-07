@@ -2,7 +2,7 @@ import { readdirSync } from 'fs'
 import path from 'path'
 import { cwd } from 'process'
 import { FC } from 'react'
-import { makeMDX } from './remarkMdx'
+// import { makeMDX } from './remarkMdx'
 
 export interface Frontmatter {
   slug: string

@@ -17,6 +17,7 @@ export interface MDXFile {
 
 const MDX_PATH = path.join(cwd(), 'static/post')
 const filenames = readdirSync(MDX_PATH)
+console.log(filenames)
 
 const MdxFileObj: Record<string, MDXFile> = {}
 let isCalled = false
