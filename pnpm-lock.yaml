@@ -20,6 +20,9 @@ importers:
       '@mdx-js/react':
         specifier: ^3.1.0
         version: 3.1.0(@types/react@19.0.7)(react@19.0.0)
+      '@mdx-js/runtime':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@next/mdx':
         specifier: ^15.1.6
         version: 15.1.6(@mdx-js/loader@3.1.0(acorn@8.14.1))(@mdx-js/react@3.1.0(@types/react@19.0.7)(react@19.0.0))
@@ -350,6 +353,10 @@ packages:
     peerDependencies:
       '@types/react': '>=16'
       react: '>=16'
+
+  '@mdx-js/runtime@2.0.0':
+    resolution: {integrity: sha512-ZrAldfS/tlYyUEjJJMj186c/U5X6Ty/855bPn82rEwuucaLSoE/TpR07TPWefa5ySadN0mau2tZIryctV6BseA==}
+    deprecated: 'Deprecated: use `evaluate` from `@mdx-js/mdx` instead'
 
   '@next/env@15.1.5':
     resolution: {integrity: sha512-jg8ygVq99W3/XXb9Y6UQsritwhjc+qeiO7QrGZRYOfviyr/HcdnhdBQu4gbp2rBIh2ZyBYTBMWbPw3JSCb0GHw==}
@@ -2790,6 +2797,8 @@ snapshots:
       '@types/mdx': 2.0.13
       '@types/react': 19.0.7
       react: 19.0.0
+
+  '@mdx-js/runtime@2.0.0': {}
 
   '@next/env@15.1.5': {}
 

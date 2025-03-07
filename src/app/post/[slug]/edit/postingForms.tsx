@@ -3,6 +3,7 @@ import { ChangeEvent, useActionState, useState } from 'react'
 import useInputs from './useInput'
 import { submitAction } from './submitActions'
 import { MDXFile } from '../../model/getMdxFileMapper'
+import MdxClient from './MdxClient'
 
 function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
   const { frontmatter: matter, rawMDX } = mdxFile
@@ -70,6 +71,7 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
           />
         </div>
       </form>
+      <MdxClient mdxText={content} />
     </div>
   )
 }
