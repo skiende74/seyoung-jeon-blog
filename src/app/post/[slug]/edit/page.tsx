@@ -7,7 +7,6 @@ async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { default: MDX, frontmatter } = (await getMDXBySlug())[
     decodeURIComponent(slug)
   ]
-  console.log(MDX)
   return <PostingForm matter={frontmatter} />
 }
 

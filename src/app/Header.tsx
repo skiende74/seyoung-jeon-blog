@@ -9,7 +9,6 @@ interface NavIcon {
   href: Route
   icon: ReactNode
 }
-console.log(VelogIcon)
 
 const navIcons: NavIcon[] = [
   {

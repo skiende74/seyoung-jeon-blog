@@ -29,7 +29,6 @@ class MDXFileLoader {
   }
 
   async load() {
-    console.log(this.#filenames)
     const filesPromise = this.#filenames.map((filename) => {
       return import('../../../../static/post/' + filename)
       // return makeMDX(
