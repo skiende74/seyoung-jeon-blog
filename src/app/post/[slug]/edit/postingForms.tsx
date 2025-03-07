@@ -2,14 +2,17 @@
 import { ChangeEvent, useActionState, useState } from 'react'
 import useInputs from './useInput'
 import { submitAction } from './submitActions'
+import { MDXFile } from '../../model/getMdxFileMapper'
 
-function Page() {
+function PostingForm({ matter }: { matter: MDXFile['frontmatter'] }) {
+  const { date, slug, summary, title, tags } = matter
+
   const { state: inputState, handleChange } = useInputs({
-    title: '',
-    slug: '',
-    date: '',
-    summary: '',
-    tags: '',
+    title,
+    slug,
+    date,
+    summary: summary ?? '',
+    tags: tags?.join(', ') ?? '',
   })
 
   const [content, setContent] = useState('')
@@ -21,7 +24,7 @@ function Page() {
     summary: inputState.summary ?? '',
     tags:
       inputState.tags.length > 0
-        ? inputState.tags.split(',').map((str) => str.trim())
+        ? inputState.tags.split(', ').map((str) => str.trim())
         : [],
     content,
   }
@@ -30,6 +33,7 @@ function Page() {
     () => submitAction(submitState),
     null
   )
+
   return (
     <div>
       <form action={action}>
@@ -96,4 +100,4 @@ const InputField = ({
   )
 }
 
-export default Page
+export default PostingForm

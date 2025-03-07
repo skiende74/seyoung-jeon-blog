@@ -2,6 +2,7 @@ import { readdirSync } from 'fs'
 import path from 'path'
 import { cwd } from 'process'
 import { FC } from 'react'
+import { makeMDX } from './remarkMdx'
 
 export interface Frontmatter {
   slug: string
@@ -28,9 +29,13 @@ class MDXFileLoader {
   }
 
   async load() {
-    const filesPromise = this.#filenames.map(
-      (filename) => import('../../../../static/post/' + filename)
-    )
+    console.log(this.#filenames)
+    const filesPromise = this.#filenames.map((filename) => {
+      return import('../../../../static/post/' + filename)
+      // return makeMDX(
+      //   path.join(__dirname, '../../../../static/post/') + filename
+      // )
+    })
 
     const files = await Promise.all(filesPromise)
     files.forEach((file) => {

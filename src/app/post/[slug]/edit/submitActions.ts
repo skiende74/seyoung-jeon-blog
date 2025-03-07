@@ -3,7 +3,7 @@
 import { writeFileSync } from 'fs'
 import path from 'path'
 import { cwd } from 'process'
-import { getMDXFileMapper } from '../post/model/getMdxFileMapper'
+import { getMDXFileMapper } from '../../model/getMdxFileMapper'
 
 interface ArticleSubmit {
   title: string
