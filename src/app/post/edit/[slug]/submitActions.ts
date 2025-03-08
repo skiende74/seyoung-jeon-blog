@@ -13,6 +13,7 @@ interface ArticleSubmit {
   tags: string[]
   content: string
 }
+
 export const submitAction = async ({
   content,
   title,

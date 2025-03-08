@@ -6,9 +6,5 @@ export default function Layout({
 }: {
   children: ReactNode | ReactNode[]
 }) {
-  return (
-    <div className="flex justify-center">
-      <div className="h-[50rem] w-[40rem]">{children}</div>
-    </div>
-  )
+  return <div className="flex justify-center">{children}</div>
 }

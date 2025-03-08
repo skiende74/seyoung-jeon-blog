@@ -3,7 +3,7 @@ import React, { useState, useEffect, ReactElement } from 'react'
 import { evaluate } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 
-export default function MdxClient({ mdxText }: { mdxText: string }) {
+export default function MdxComponent({ mdxText }: { mdxText: string }) {
   const [CompiledMDX, setCompiledMDX] = useState<(() => ReactElement) | null>(
     null
   )

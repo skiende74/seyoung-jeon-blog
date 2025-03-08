@@ -1,12 +1,10 @@
 import { getMDXBySlug } from '../../model/MDXFileService'
-import PostingForm from './postingForms'
+import PostingForm from './PostingForms'
 
 async function Page({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+  const slug = decodeURIComponent((await params).slug)
 
-  const { default: _, ...mdxFile } = (await getMDXBySlug())[
-    decodeURIComponent(slug)
-  ]
+  const { default: _, ...mdxFile } = (await getMDXBySlug())[slug]
 
   return <PostingForm mdxFile={mdxFile} />
 }
