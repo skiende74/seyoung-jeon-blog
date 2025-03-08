@@ -39,7 +39,7 @@ function Header({ title }: { title: string }) {
   return (
     <nav className="sticky top-0 flex h-12 w-full items-center justify-center bg-neutral-800 px-3 py-1 text-white">
       <div className="flex w-[50rem] items-center justify-between">
-        <Link href="/">
+        <Link href="/post">
           <div className="text-md font-semibold">{title}</div>
         </Link>
         <ul className="flex items-center gap-x-2.5">
