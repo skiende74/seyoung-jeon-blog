@@ -1,9 +1,9 @@
 'use client'
 import { ChangeEvent, useActionState, useState } from 'react'
 import useInputs from './useInput'
-import { submitAction } from './submitActions'
 import { MDXFile } from '../../model/getMdxFileMapper'
 import MdxComponent from './MdxComponent'
+import { submitAction } from '@/dal/post/edit'
 
 function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
   const { frontmatter: matter, rawMDX } = mdxFile
