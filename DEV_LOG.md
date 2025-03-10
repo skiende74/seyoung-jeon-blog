@@ -16,3 +16,6 @@
   - v4말고 beta(v5)를 사용한 이유
     - v4는 app라우터도 지원은 하지만, page라우터 우선으로 설계되어 있었다.
     - 개별페이지에서 auth정보를 가져올 순 있지만, Nextjs의 middleware에서 인증을 가져올 수 없기때문에 app라우터 first인 beta 버전으로 최종결정
+- 인가(authorization)는 middleware로 구현
+  - 매 서버 page에서 cookies를 확인해 인가를 확인하는 대신, middleware에서 matcher를 통해 훨씬 집약적으로 관리할 수 있음.
+  - matcher에 해당하는 엔드포인트만 동적이게되므로 서버부담도 차이가없음
