@@ -1,4 +1,3 @@
-import PostList from '@/app/post/PostList'
 import { ReactNode } from 'react'
 
 export default function Layout({

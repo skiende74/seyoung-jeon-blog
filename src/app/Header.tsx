@@ -5,6 +5,7 @@ import { FaGithub } from 'react-icons/fa'
 import { IoPersonSharp } from 'react-icons/io5'
 import VelogIcon from './velog.svg'
 import Image from 'next/image'
+import { auth, signIn, signOut } from '@/auth'
 interface NavIcon {
   href: Route
   icon: ReactNode
@@ -35,7 +36,10 @@ const navIcons: NavIcon[] = [
   },
 ]
 
-function Header({ title }: { title: string }) {
+async function Header({ title }: { title: string }) {
+  const session = await auth()
+  const isLoggedIn = session !== null
+
   return (
     <nav className="sticky top-0 flex h-12 w-full items-center justify-center bg-neutral-800 px-3 py-1 text-white">
       <div className="flex w-[50rem] items-center justify-between">
@@ -48,6 +52,30 @@ function Header({ title }: { title: string }) {
               {icon}
             </Link>
           ))}
+          {isLoggedIn && (
+            <form
+              action={async () => {
+                'use server'
+                await signOut()
+              }}
+            >
+              <button type="submit" className="cursor-pointer">
+                Sign Out
+              </button>
+            </form>
+          )}
+          {!isLoggedIn && (
+            <form
+              action={async () => {
+                'use server'
+                await signIn('google')
+              }}
+            >
+              <button type="submit" className="cursor-pointer">
+                구글 로그인
+              </button>
+            </form>
+          )}
         </ul>
       </div>
     </nav>
