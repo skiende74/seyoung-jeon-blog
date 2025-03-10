@@ -26,7 +26,14 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     //   )
     // },
     img: ({ width, height, ...props }) => {
-      return <Image width={width ?? 700} height={height ?? 700} {...props} />
+      return (
+        <Image
+          width={width ?? 700}
+          height={height ?? 700}
+          {...props}
+          alt="image"
+        />
+      )
     },
 
     ...components,
