@@ -1,7 +1,8 @@
 ## 남은 변경사항
 
-- 구글 OAuth 이용한 인증/인가 기능 구현.
-- 인증/인가가 된 사람만 글 수정 기능 가능 (쿠키를 통한 access/refresh 토큰관리)
+- edit 편집기 UI를 좀 더 보기좋게 개선하기
+  - UI 단순개선
+  - 내가쓰는 글이랑 똑같이보이게 remark, rehype적용
 
 ## 고려한 사항
 
@@ -12,10 +13,15 @@
   그리고 이미 해둔 것이 있어, 그것을 사용하는 것이 더 단순.
 - next-auth@beta 사용
   - next-auth를 사용한 이유
-    - encrypt/decrypt 로직, OAuth별 보일러플레이트 등을 줄여주기 때문에.
+    - encrypt/decrypt 로직, OAuth별 보일러플레이트, 토큰관리노력 등을 줄여주기 때문에.
   - v4말고 beta(v5)를 사용한 이유
     - v4는 app라우터도 지원은 하지만, page라우터 우선으로 설계되어 있었다.
     - 개별페이지에서 auth정보를 가져올 순 있지만, Nextjs의 middleware에서 인증을 가져올 수 없기때문에 app라우터 first인 beta 버전으로 최종결정
 - 인가(authorization)는 middleware로 구현
   - 매 서버 page에서 cookies를 확인해 인가를 확인하는 대신, middleware에서 matcher를 통해 훨씬 집약적으로 관리할 수 있음.
   - matcher에 해당하는 엔드포인트만 동적이게되므로 서버부담도 차이가없음
+
+## 구현한 것
+
+- 구글 OAuth 이용한 인증/인가 기능 구현.
+- 인증/인가가 된 사람만 글 수정 기능 가능 (쿠키를 통한 access/refresh 토큰관리)
