@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: 'Seyoung Jeon Blog',
   description:
     'It describes the learning about web development or software development',
+  icons: { icon: '/favicon.png' },
 }
 
 export default function RootLayout({
