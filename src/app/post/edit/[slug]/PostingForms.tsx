@@ -1,9 +1,10 @@
 'use client'
-import { ChangeEvent, useActionState, useState } from 'react'
+import { ChangeEvent, useActionState, useRef, useState } from 'react'
 import useInputs from './useInput'
 import { MDXFile } from '../../model/getMdxFileMapper'
 import MdxComponent from './MdxComponent'
 import { submitAction } from '@/dal/post/edit'
+import { overlay } from 'overlay-kit'
 
 function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
   const { frontmatter: matter, rawMDX } = mdxFile
@@ -36,9 +37,11 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
     null
   )
 
+  const formRef = useRef<HTMLFormElement>(null)
+
   return (
-    <div>
-      <form action={action}>
+    <div className="px-3">
+      <form ref={formRef} action={action}>
         <div className="mb-2 grid grid-cols-2 gap-y-2">
           {['title', 'slug', 'date', 'summary', 'tags'].map((name) => {
             return (
@@ -52,13 +55,77 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
             )
           })}
           <button
+            type="submit"
             className="cursor-pointer disabled:bg-neutral-200"
             disabled={inputState.title.length === 0}
           >
             제출
           </button>
+          {/* Open the modal using document.getElementById('ID').showModal() method */}
+          <button
+            className=""
+            type="button"
+            onClick={() => {
+              overlay.open(
+                ({ isOpen, close }) =>
+                  isOpen && (
+                    <div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center">
+                      <div className="absolute top-0 right-0 bottom-0 left-0 z-0 bg-black opacity-30" />
+                      <div className="relative z-10 rounded-md bg-neutral-700 p-4">
+                        <h3 className="text-sm font-bold">제출모달</h3>
+                        <div className="modal-action">
+                          <div>
+                            {/* if there is a button in form, it will close the modal */}
+                            <div className="grid max-w-100 grid-cols-2 flex-wrap justify-center gap-x-4">
+                              {['title', 'slug', 'date', 'summary', 'tags'].map(
+                                (name) => {
+                                  return (
+                                    <InputField
+                                      key={name}
+                                      name={name}
+                                      label={name}
+                                      value={
+                                        inputState[
+                                          name as keyof typeof inputState
+                                        ]
+                                      }
+                                      onChange={handleChange}
+                                    />
+                                  )
+                                }
+                              )}
+                            </div>
+                            <button
+                              className="absolute top-3 right-3 cursor-pointer text-red-400"
+                              type="button"
+                              onClick={close}
+                            >
+                              X
+                            </button>
+                            <form
+                              action={() => {
+                                action()
+                                close()
+                              }}
+                            >
+                              <button className="cursor-pointer text-red-400">
+                                제출
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+              )
+            }}
+          >
+            open modal
+          </button>
+
           {isPending && '제출하는 중'}
-          {response !== null &&
+          {!isPending &&
+            response !== null &&
             !response.isSuccess &&
             `제출에 실패하였습니다. ${response.message}`}
         </div>

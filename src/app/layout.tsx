@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Header from './Header'
+import ClientProvider from './ClientProvider'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,9 +30,12 @@ export default function RootLayout({
       <body
         className={`relative h-dvh bg-neutral-800 text-white ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header title="Seyoung Jeon" />
-        {/* <Link href="/login">로그인</Link> */}
-        {children}
+        <ClientProvider>
+          <Header title="Seyoung Jeon" />
+          {/* <Link href="/login">로그인</Link> */}
+
+          {children}
+        </ClientProvider>
       </body>
     </html>
   )

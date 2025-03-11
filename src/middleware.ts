@@ -6,6 +6,7 @@ export default auth((req) => {
     return NextResponse.next()
   return NextResponse.redirect(`${process.env.BASE_URL}/api/auth/signin`)
 })
+
 export const config = {
   matcher: ['/post/edit/:path*'],
 }
