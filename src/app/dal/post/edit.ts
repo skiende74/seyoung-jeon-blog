@@ -1,6 +1,5 @@
 'use server'
 
-import { getMDXFileMapper } from '@/app/post/model/getMdxFileMapper'
 import { commitMarkdownFile } from './octokit'
 
 interface ArticleSubmit {
@@ -27,10 +26,8 @@ date: ${date}
 summary: ${summary}
 tags: [${tags.join(', ')}]
 ---
-  
-  `
-  console.log('action:', content)
-  const mdxs = await getMDXFileMapper()
+
+`
   if (title === '') return { isSuccess: false, message: '제목을 작성해주세요' }
   const result = frontmatterString + content
   const fileName = slug + '.mdx'
