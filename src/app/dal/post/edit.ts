@@ -29,9 +29,8 @@ tags: [${tags.join(', ')}]
 ---
   
   `
+  console.log('action:', content)
   const mdxs = await getMDXFileMapper()
-  if (Object.keys(mdxs).includes(slug))
-    return { isSuccess: false, message: '이미 존재하는 slug입니다.' }
   if (title === '') return { isSuccess: false, message: '제목을 작성해주세요' }
   const result = frontmatterString + content
   const fileName = slug + '.mdx'

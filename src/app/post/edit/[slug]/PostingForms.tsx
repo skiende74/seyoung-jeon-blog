@@ -1,10 +1,13 @@
 'use client'
-import { ChangeEvent, useActionState, useRef, useState } from 'react'
+import { ChangeEvent, startTransition, useActionState } from 'react'
 import useInputs from './useInput'
 import { MDXFile } from '../../model/getMdxFileMapper'
 import MdxComponent from './MdxComponent'
-import { submitAction } from '@/dal/post/edit'
+import { submitAction } from '@/app/dal/post/edit'
 import { overlay } from 'overlay-kit'
+import SubmitModal, { InputState } from './SubmitModal'
+import Button from '@/app/_component/Button'
+import { redirect } from 'next/navigation'
 
 function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
   const { frontmatter: matter, rawMDX } = mdxFile
@@ -12,116 +15,67 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
 
   const { state: inputState, handleChange } = useInputs({
     title,
-    slug,
-    date,
-    summary: summary ?? '',
     tags: tags?.join(', ') ?? '',
+    content: rawMDX,
   })
 
-  const [content, setContent] = useState(rawMDX)
-
-  const submitState = {
-    title: inputState.title,
-    slug: inputState.slug ?? inputState.title.replace(' ', '-'),
-    date: inputState.date ?? Date.now().toString(),
-    summary: inputState.summary ?? '',
-    tags:
-      inputState.tags.length > 0
-        ? inputState.tags.split(', ').map((str) => str.trim())
-        : [],
-    content,
-  }
-
   const [response, action, isPending] = useActionState(
-    () => submitAction(submitState),
+    (_state: unknown, submitState: Parameters<typeof submitAction>[0]) =>
+      submitAction(submitState),
     null
   )
 
-  const formRef = useRef<HTMLFormElement>(null)
-
   return (
     <div className="px-3">
-      <form ref={formRef} action={action}>
-        <div className="mb-2 grid grid-cols-2 gap-y-2">
-          {['title', 'slug', 'date', 'summary', 'tags'].map((name) => {
+      <div>
+        <div className="mb-2 grid grid-cols-2 gap-x-4 gap-y-2">
+          {['title', 'tags'].map((name) => {
             return (
               <InputField
                 key={name}
                 name={name}
-                label={name}
+                label={KOREAN_LABEL_MAP[name]}
                 value={inputState[name as keyof typeof inputState]}
                 onChange={handleChange}
               />
             )
           })}
-          <button
-            type="submit"
-            className="cursor-pointer disabled:bg-neutral-200"
-            disabled={inputState.title.length === 0}
-          >
-            제출
-          </button>
-          {/* Open the modal using document.getElementById('ID').showModal() method */}
-          <button
-            className=""
-            type="button"
-            onClick={() => {
-              overlay.open(
+        </div>
+        <div className="flex justify-end">
+          <Button
+            className="mr-4"
+            onClick={async () => {
+              const modalInput = await overlay.openAsync<InputState>(
                 ({ isOpen, close }) =>
                   isOpen && (
-                    <div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center">
-                      <div className="absolute top-0 right-0 bottom-0 left-0 z-0 bg-black opacity-30" />
-                      <div className="relative z-10 rounded-md bg-neutral-700 p-4">
-                        <h3 className="text-sm font-bold">제출모달</h3>
-                        <div className="modal-action">
-                          <div>
-                            {/* if there is a button in form, it will close the modal */}
-                            <div className="grid max-w-100 grid-cols-2 flex-wrap justify-center gap-x-4">
-                              {['title', 'slug', 'date', 'summary', 'tags'].map(
-                                (name) => {
-                                  return (
-                                    <InputField
-                                      key={name}
-                                      name={name}
-                                      label={name}
-                                      value={
-                                        inputState[
-                                          name as keyof typeof inputState
-                                        ]
-                                      }
-                                      onChange={handleChange}
-                                    />
-                                  )
-                                }
-                              )}
-                            </div>
-                            <button
-                              className="absolute top-3 right-3 cursor-pointer text-red-400"
-                              type="button"
-                              onClick={close}
-                            >
-                              X
-                            </button>
-                            <form
-                              action={() => {
-                                action()
-                                close()
-                              }}
-                            >
-                              <button className="cursor-pointer text-red-400">
-                                제출
-                              </button>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <SubmitModal
+                      initialInputState={{
+                        slug: slug ?? inputState.title.replace(' ', '-'),
+                        date: date ?? Date.now().toString(),
+                        summary: summary ?? '',
+                      }}
+                      onClose={close}
+                    />
                   )
               )
+
+              const res = { ...modalInput, ...inputState }
+              const submitState = {
+                ...res,
+                tags:
+                  inputState.tags.length > 0
+                    ? inputState.tags.split(', ').map((str) => str.trim())
+                    : [],
+              }
+
+              startTransition(() => {
+                action(submitState)
+                redirect('/post')
+              })
             }}
           >
-            open modal
-          </button>
+            제출하기
+          </Button>
 
           {isPending && '제출하는 중'}
           {!isPending &&
@@ -133,19 +87,19 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
           <textarea
             className="h-160 w-full flex-1 rounded-sm border-neutral-300 bg-white px-3 py-0.5"
             name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={inputState.content}
+            onChange={handleChange}
           />
           <div className="h-160 flex-1 overflow-y-auto">
-            <MdxComponent mdxText={content} />
+            <MdxComponent mdxText={inputState.content} />
           </div>
         </div>
-      </form>
+      </div>
     </div>
   )
 }
 
-const InputField = ({
+export const InputField = ({
   name,
   label,
   value,
@@ -157,12 +111,12 @@ const InputField = ({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }) => {
   return (
-    <div>
-      <label className="mr-1.5" htmlFor={name}>
+    <div className="flex flex-col">
+      <label className="mr-1.5 text-sm" htmlFor={name}>
         {label}
       </label>
       <input
-        className="rounded-sm border-neutral-300 bg-white px-3 py-0.5"
+        className="rounded-sm border-1 border-neutral-300 px-3 py-0.5"
         id={name}
         name={name}
         value={value}
@@ -170,6 +124,14 @@ const InputField = ({
       />
     </div>
   )
+}
+
+export const KOREAN_LABEL_MAP: Record<string, string> = {
+  title: '제목',
+  slug: '슬러그',
+  date: '날짜',
+  summary: '요약',
+  tags: '태그',
 }
 
 export default PostingForm
