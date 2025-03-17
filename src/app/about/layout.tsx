@@ -12,9 +12,11 @@ function MdxLayout({ children }: { children: ReactNode }) {
 const proseFont = [
   'prose-h1:text-3xl prose-h1:text-center prose-h1:mt-6 prose-h1:mb-10',
   'prose-h2:text-blue-500 prose-h2:text-sm',
-  'prose-h5:mt-4 prose-h5:text-sm prose-h5:text-neutral-800 prose-h5:font-extrabold ',
+  'prose-h4:text-[1.1em]',
+  'prose-h5:mt-4 prose-h5:text-[1em] prose-h5:text-neutral-800 prose-h5:font-extrabold ',
   'prose-p:my-0 prose-ul:mt-2',
   'text-[15px]',
+  'prose-em:text-blue-500 prose-em:not-italic prose-em:font-bold',
   // 'prose-p:text-[15px] prose-li:text-[15px]',
 ].join(' ')
 
