@@ -14,7 +14,8 @@ const proseFont = [
   'prose-h2:text-blue-500 prose-h2:text-sm',
   'prose-h5:mt-4 prose-h5:text-sm prose-h5:text-neutral-800 prose-h5:font-extrabold ',
   'prose-p:my-0 prose-ul:mt-2',
-  'prose-p:text-[15px] prose-li:text-[15px]',
+  'text-[15px]',
+  // 'prose-p:text-[15px] prose-li:text-[15px]',
 ].join(' ')
 
 export default MdxLayout
