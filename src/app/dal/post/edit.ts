@@ -20,7 +20,7 @@ export const submitAction = async ({
   tags,
 }: ArticleSubmit) => {
   const frontmatterString = `---
-title: ${title}
+title: '${title}'
 slug: ${slug}
 date: ${date}
 summary: ${summary}

@@ -1,20 +1,21 @@
 ---
-title: [React-dom 19] <script> hoist를 이용해 외부스크립트 선언적으로 사용하기
+title: '[React-dom 19] <script> hoist를 이용해 외부스크립트 선언적으로 사용하기'
 slug: react-19-script-hoist
 date: 2024-12-30
 summary: index.html을 건드리지 않고 외부스크립트를 선언적으로 관리합니다.
 tags: [React, react-dom]
 ---
 
-
 React환경에서 Kakao Map API를 사용하거나, 외부 API를 사용하기위해 `<script>`태그를 index.html에 수작업으로 넣어주어야 하곤 합니다.
 
 이 포스팅에서는 이러한 상황의 해결책을
+
 ```
 - 방법 1. 가장 기초적인 구현인 index.html에 수작업으로 넣어주기.
 - 방법 2. useExternalScript()훅을 구현하여 동적으로 넣어주기.
 - 방법 3. react-dom v19에서 새로도입된 async script hoist 기능을 활용하여 동적으로 넣어주기
 ```
+
 순으로 다뤄보겠습니다.
 
 ### 방법1. 가장 기초적인 구현
