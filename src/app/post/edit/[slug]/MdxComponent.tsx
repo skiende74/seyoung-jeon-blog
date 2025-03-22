@@ -2,6 +2,13 @@
 import React, { useState, useEffect, ReactElement } from 'react'
 import { evaluate } from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
+import remarkGfm from 'remark-gfm'
+import remarkFrontmatter from 'remark-frontmatter'
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
+import { remarkRawMdx } from '@/remark-raw-mdx'
+import rehypeCodeTitles from 'rehype-code-titles'
+import rehypePrismPlus from 'rehype-prism-plus'
+import { Options } from 'rehype-prism-plus/generator'
 
 export default function MdxComponent({ mdxText }: { mdxText: string }) {
   const [CompiledMDX, setCompiledMDX] = useState<(() => ReactElement) | null>(
@@ -15,7 +22,22 @@ export default function MdxComponent({ mdxText }: { mdxText: string }) {
         // runtime: 'react/jsx-runtime'에서 가져온 객체들을 넘겨줘야함
         const { default: MdxComponent } = await evaluate(mdxText, {
           ...runtime,
-          // (선택) remarkPlugins, rehypePlugins 등 추가 설정 가능
+          remarkPlugins: [
+            remarkGfm,
+            remarkFrontmatter,
+            remarkMdxFrontmatter,
+            remarkRawMdx,
+          ],
+          rehypePlugins: [
+            rehypeCodeTitles,
+            [
+              rehypePrismPlus,
+              {
+                showLineNumbers: true,
+                defaultLanguage: 'text',
+              } satisfies Options,
+            ],
+          ],
         })
         // evaluate()가 반환하는 MdxComponent는 "MDX로부터 변환된 React 컴포넌트"
         setCompiledMDX(() => MdxComponent as () => ReactElement)

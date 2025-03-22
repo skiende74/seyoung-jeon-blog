@@ -16,6 +16,8 @@ const proseFont = [
   'prose-h5:mt-4 prose-h5:text-[1em] prose-h5:text-neutral-800 prose-h5:font-extrabold ',
   'prose-p:my-0 prose-ul:mt-2',
   'text-[15px]',
+  'prose-small:mt-[100px]',
+  // 'prose-div',
   'prose-em:text-blue-500 prose-em:not-italic prose-em:font-bold',
   // 'prose-p:text-[15px] prose-li:text-[15px]',
 ].join(' ')
