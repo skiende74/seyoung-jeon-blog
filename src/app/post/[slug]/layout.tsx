@@ -3,7 +3,7 @@ import './code-block-prism.css'
 export default function MdxLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="prose prose-invert prose-pre:bg-[transparent] m-auto max-w-[800px]">
+      <div className="prose prose-invert prose-pre:bg-[transparent] m-auto mx-4 max-w-[calc(100dvw-4px)]">
         {children}
       </div>
     </>

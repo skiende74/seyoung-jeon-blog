@@ -32,7 +32,7 @@ function PostingForm({ mdxFile }: { mdxFile: Omit<MDXFile, 'default'> }) {
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/styles/base16/atelier-dune-light.min.css"
         precedence="medium"
       />
-      <div className="prose prose-invert prose-pre:bg-[transparent] m-auto max-w-[1200px]">
+      <div className="prose prose-invert prose-pre:bg-[transparent] m-auto max-w-[400px] lg:max-w-[1200px]">
         <div className="px-3">
           <div>
             <div className="mb-2 grid grid-cols-2 gap-x-4 gap-y-2">
