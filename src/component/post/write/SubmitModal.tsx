@@ -2,16 +2,19 @@ import React from 'react'
 import { InputField, KOREAN_LABEL_MAP } from './PostingForms'
 import useInputs from './useInput'
 import { Save } from 'lucide-react'
-import Button from '@/app/_component/Button'
+import Button from '@/component/ui/Button'
 
 const DATA = ['slug', 'date', 'summary'] as const
 export type InputState = Record<(typeof DATA)[number], string>
+
 function SubmitModal({
   initialInputState,
   onClose,
+  onConfirm,
 }: {
   initialInputState: InputState
   onClose: (inputState: InputState) => void
+  onConfirm: (inputState: InputState) => void
 }) {
   const { state: inputState, handleChange } =
     useInputs<InputState>(initialInputState)
