@@ -1,0 +1,376 @@
+---
+title: Headless 라이브러리처럼 Tabs 구현하기 - useTab() 훅 없이
+slug: Headless-라이브러리처럼-Tabs-구현하기
+date: 2025-05-13
+summary: Headless 라이브러리들의 Tabs와 같이, 별도 훅 import 없이 사용할 수 있는 UI 컴포넌트 구현을 다룹니다.
+tags: [React, HeadlessUI]
+---
+
+이 글에서는 Tabs와 같은 컴포넌트를 Headless 라이브러리들처럼 `useTabs() 훅 없이` 구현하는 방법을 다룹니다.
+
+## 학습 목표
+
+- Headless UI 라이브러리처럼, `useTab() 훅 없이` 컴포넌트만으로 Tabs 컴포넌트를 사용할 수 있게 구현합니다.
+- `React.Children`, `Children.map`를 사용하여 렌더된 결과에 접근하는 방법을 배웁니다.
+- `useImperativeHandle`을 활용하여 ref를 통해 컴포넌트 내부 상태를 변경하는 방법을 배웁니다.
+
+## 준비사항
+
+- useTab()을 이용한 기본적인 Tabs 구현 방법을 알고 있어야 해요.
+- 컴파운드 컴포넌트에 대한 기본 지식을 갖추고 있어야 해요.
+- Context.Provider 패턴을 이해하고 있어야 해요.
+
+### 선언적이지 못한 Tabs의 구현
+
+```tsx
+const Component ()=>{
+   const [tabValue, setTabValue] = useTab('tab1');
+
+  return (
+    <>
+      <TabList tabIndex={tabIndex}
+        tabs={[()=>'탭 1',()=>'탭 2',()=>'탭 3']}
+        tabValues={['tab1','tab2','tab3']}
+        onChangeTabValue={setTabValue}
+        />
+      <TabPanels
+        tabValue={tabValue}
+        tabValues={['tab1','tab2','tab3']}
+        tabContents={[
+          ()=>'탭 1 내용',
+          ()=>'탭 2 내용',
+          ()=>'탭 3 내용',
+        ]}
+        />
+    </>);
+}
+```
+
+위 방식은 탭을 사용하고 싶을 때,
+`useTab()`를 직접 호출해서 상태를 관리해주고
+핸들러와 tabValues 들을 직접 넘겨주어야해서 선언적이지 않아요.
+사용시에도 훅과 컴포넌트 총 2개를 import해주어서 둘을 연동하는 코드를 작성해주어야해요
+
+또, `tabs`와 `tabContents` renderProp형태로 구현하고있기때문에
+TabList, TabPanel이 너무 비대해질 수 있다는 아쉬움을 갖고있어요.
+
+tabValues와 tabContents의 순서 불일치 실수가 발생할 가능성도 있어요.
+
+### 오늘 만들어볼 컴포넌트
+
+```tsx
+const Component = () => {
+
+  return (
+  <TabGroup defaultValue="tab1">
+    <TabList>
+      <Tab value="tab1">탭 1</Tab>
+      <Tab value="tab2">탭 2</Tab>
+      <Tab value="tab3">탭 3</Tab>
+    </TabList>
+    <TabPanels>
+      <TabPanel value="tab1">탭 1 내용</TabPanel>
+      <TabPanel value="tab2">탭 2 내용</TabPanel>
+      <TabPanel value="tab3">탭 3 내용</TabPanel>
+    </TabPanels>
+  </TabGroup>
+  );
+}
+```
+
+headlessUI, radix UI 등의 헤드리스 라이브러리들을 보면
+위와같이 useTab()같은 훅 없이도 컴포넌트 만으로 사용할 수 있게 구현되어있어요.
+
+또, 위와 같이 `TabGroup, TabList, Tab, Tabpanels, TabPanel`로 세부 컴포넌트를 분리해서 보여주곤합니다.
+오늘은 위와 같이 컴포넌트를 구현하는 방법을 다룰 예정입니다.
+
+그럼 기존의 headless 라이브러리 예시를 먼저 살펴보겠습니다.
+
+## 기존 headless UI 라이브러리 조사
+
+headlessUI와 radix UI 모두 위와 같은 공통 형태를 따르고 있습니다.
+
+### Headless UI 예시
+
+```tsx
+const Component = ()=>(
+  <TabGroup>
+    <TabList className="flex gap-4">
+      <Tab key={name}> 탭 1 </Tab>
+      <Tab key={name}> 탭 2 </Tab>
+      <Tab key={name}> 탭 3 </Tab>
+    </TabList>
+    <TabPanels className="mt-3">
+      <TabPanel key={name}> 탭 1 내용</TabPanel>
+      <TabPanel key={name}> 탭 2 내용</TabPanel>
+      <TabPanel key={name}> 탭 3 내용</TabPanel>
+    </TabPanels>
+  </TabGroup>);
+```
+
+### Radix UI 예시
+
+```tsx
+const Component = ()=>(
+  <Tabs.Root defaultValue="account">
+	<Tabs.List>
+		<Tabs.Trigger value="account">탭 1</Tabs.Trigger>
+		<Tabs.Trigger value="documents">탭 2</Tabs.Trigger>
+		<Tabs.Trigger value="settings">탭 3</Tabs.Trigger>
+	</Tabs.List>
+
+	<Box pt="3">
+		<Tabs.Content value="account"> 탭 1 내용</Tabs.Content>
+		<Tabs.Content value="documents">
+			탭 2 내용
+		</Tabs.Content>
+		<Tabs.Content value="settings">
+			탭 3 내용
+		</Tabs.Content>
+	</Box>
+</Tabs.Root>
+);
+```
+
+구체적인 사용 방식은 사실상 둘 모두 `useTabs() 훅`이 **필요 없는** 컴파운드 패턴을 따른다고 볼 수 있어요.
+
+두 라이브러리의 사용방법이 사실상 동일하고, 다른 라이브러리들도 마찬가지라고 생각됩니다.
+
+다만, Headless UI는 `value prop`을 받지 않고있어, 내부적으로 index 방식으로 동작하고 있습니다.
+Radix UI는 `value prop`을 통해 구현되어있습니다.
+
+value prop 방식이 좀 더 범용성이 높으므로, 이 방법을 통해 구현해볼 예정입니다.
+
+## 1단계. TabGroup 구현.
+
+TabGroup은 내부에서 공통으로 쓸 수 있는 상태들의
+Context Provider를 구현합니다.
+
+```tsx
+// 컨텍스트 타입 정의
+interface TabContextType {
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
+}
+
+export interface TabGroupRef {
+  setSelectedValue: (value: string) => void;
+}
+
+const TabContext = createContext<TabContextType | undefined>(undefined);
+
+// TabGroup: 컨텍스트 제공, defaultIndex 설정 가능
+interface TabGroupProps {
+  ref: RefObject<TabGroupRef | null>;
+  children: ReactNode;
+  defaultValue: string;
+}
+
+export function TabGroup({ ref, children, defaultValue }: TabGroupProps) {
+  const [selectedValue, setSelectedValue] = useState(defaultValue);
+  useImperativeHandle(ref, () => ({ setSelectedValue }), []);
+  return (
+    <TabContext.Provider value={{ selectedValue: selectedValue, setSelectedValue: setSelectedValue }}>
+      {children}
+    </TabContext.Provider>
+  );
+}
+```
+
+외부에서 ref를 통해 selectedValue를 원할때 바꿔줄 수 있게
+`useImperativeHandle`을 사용해주었습니다.
+
+## 2단계. TabList 구현
+
+탭에`선택된 탭`이라는 UI 표시를 해주려면 자식인 Tab에 isSelected를 잘 넘겨주어야합니다.
+TabList는 children들에 isSelected와 onClick 핸들러를 주입해줍니다.
+
+children.prop.value를 context.selectedValue와 비교하여야하는데,
+이미 렌더된 자식의 prop 값을 확인하기위해 `React.Children`을 사용합니다.
+
+React.Children.map()을 사용하여 value를 검사하고 prop이 일치하면 isSelected를 true로 prop을 변경해줍니다.
+
+```tsx
+// TabList: 자식 Tab 컴포넌트들을 순회하며 선택 여부와 클릭 핸들러 주입
+
+interface TabListProps {
+  children: ReactNode;
+  customCss?: SerializedStyles; // 테일윈드 CSS 타입
+}
+
+export function TabList({ children, customCss: customCss }: TabListProps) {
+  const context = useContext(TabContext);
+  if (!context) throw new Error("TabList must be used within a TabGroup");
+  const { selectedValue: selectedValue, setSelectedValue: setSelectedValue } = context;
+
+  return (
+    <div css={customCss}>
+      {Children.map(children, (child) => {
+        if (!React.isValidElement<TabProps>(child)) return null;
+        const tabChild = child as ReactElement<TabProps>;
+        return cloneElement(tabChild, {
+          isSelected: tabChild.props.value === selectedValue,
+          onClick: () => setSelectedValue(tabChild.props.value),
+        });
+      })}
+    </div>
+  );
+}
+```
+
+## 3단계. Tab 구현
+
+Tab 컴포넌트의 관심범위는 단순합니다.
+isSelected 값에따라 다른 CSS 스타일링을 적용해주면 되는 단순한 컴포넌트입니다.
+
+```tsx
+
+// Tab: 실제 탭 버튼. isSelected/provided onClick, css, selectedCss 를 사용
+interface TabProps {
+  children: ReactNode;
+  isSelected?: boolean;
+  onClick?: () => void;
+  customCss?: SerializedStyles;
+  selectedCss?: SerializedStyles;
+  value: string;
+}
+
+export function Tab({ children, isSelected = false, onClick, customCss, selectedCss }: TabProps) {
+  return (
+    <button
+      type="button"
+      css={css([customCss, isSelected && selectedCss])}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+## 4단계. TabPanels 구현
+
+```tsx
+
+// TabPanels: 자식 TabPanel 컴포넌트 중 선택된 인덱스만 렌더
+interface TabPanelsProps {
+  children: ReactNode;
+  css?: SerializedStyles;
+}
+export function TabPanels({ children, css: customCss }: TabPanelsProps) {
+  const context = useContext(TabContext);
+  if (!context) throw new Error("TabPanels must be used within a TabGroup");
+  const { selectedValue } = context;
+
+  return (
+    <div
+      css={customCss}
+      className="tab-panels"
+    >
+      {Children.map(children, (child) => {
+        if (!React.isValidElement<TabProps>(child)) return null;
+
+        return child.props.value === selectedValue ? child : null;
+      })}
+    </div>
+  );
+}
+```
+
+TabPanels의 구현은 TabList와 유사합니다.
+Children.map()을 이용해 prop.value를 검사하고,
+컨텍스트의 값과 일치하는 경우에만 보여줍니다.
+
+## 5단계. TabPanel 구현
+
+```tsx
+// TabPanel: 패널 내용
+interface TabPanelProps {
+  children: ReactNode;
+  css?: SerializedStyles;
+  value: string;
+}
+
+export function TabPanel({ children, css: customCss }: TabPanelProps) {
+  return (
+    <div
+      css={customCss}
+      className="tab-panel"
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+단순 UI 컴포넌트입니다.
+
+## 추가기능. 외부에서 상태바꾸기
+
+```tsx
+const Component = () => {
+  const ref = useRef(null);
+  const changeTabValue = (value:string)=>{
+ 	ref.current?.setSelectedValue(value);
+ }
+
+  return (
+  <TabGroup ref={ref} defaultValue="tab1">
+    <TabList>
+      <Tab value="tab1">탭 1</Tab>
+      <Tab value="tab2">탭 2</Tab>
+      <Tab value="tab3">탭 3</Tab>
+    </TabList>
+    <TabPanels>
+      <TabPanel value="tab1">탭 1 내용</TabPanel>
+      <TabPanel value="tab2">탭 2 내용</TabPanel>
+      <TabPanel value="tab3">탭 3 내용</TabPanel>
+    </TabPanels>
+  </TabGroup>
+  );
+}
+```
+
+위와같이 ref를 달아서 사용하면
+탭 외부에서 내부상태인 value 값을 바꿀 수도 있어요.
+
+## 이 구현에 사용한 테크닉 요약
+
+### React.Children.map() 사용
+
+props.children 으로는,
+자식의 런타임 prop이 무엇인지 등을 검사할 수 없어요.
+
+자식의 런타임 prop.value에 따라 탭을 보여줄지 말지를 결정해야하기 때문에, React.Children.map()을 통해
+`TabList`, `TabPanels`를 구현했어요.
+
+TabGroup 구현에있어 가장 핵심적인 내용이라 할 수 있어요.
+
+### ref, useImperativeHandle 사용하여 탭 외부에서 내부 상태바꾸기
+
+TabContext.value는 TabGroup의 내부상태이기 때문에
+외부에서는 변경할 수 없어요.
+외부에서 변경할 수 있도록 하기 위해서 ref.current.setSelected('tab2')와 같이 사용해 내부 상태값을 변경할 수 있도록 구현해주었어요.
+
+### React.Children을 사용해도 괜찮을까요?
+
+#### 공식문서
+
+주의 : React.Children은 Legacy API에 속해요.
+그래서 공식문서에서는 가능하면 `React.Children`보다 `props.children`을 먼저 고려할 것을 권장해주고 있어요.
+
+#### 저의 의견
+
+하지만, props.children은 자식의 런타임 prop에 접근할 수 없어요.
+이럴 때는 React.Children을 사용해야 해요.
+이런 기능을 제공해주는 새로운 API가 나오기전까진 이것을 사용
+
+React.Children 적절한 사용 예시.
+
+- Children의 런타임 prop을 검사하고 싶을 때
+- Children을 다른 컴포넌트로 감싸주고 싶을 때.
+  (children의 prop을 바꿔주고싶은 경우는 위와같이 cloneElement 사용)
+
+안 좋은 사용 예시.
+
+- props.children으로 대응가능함에도 Children을 사용
